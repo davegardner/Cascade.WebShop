@@ -1,0 +1,57 @@
+﻿@model IList<Cascade.WebShop.Models.OrderRecord>
+@Script.Require("jQuery")
+@using (Script.Foot())
+{ 
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Make the row react as if it was a link.
+        $('table tr[data-href]').css('cursor', 'pointer');
+
+        $('table tr[data-href]').click(function () {
+            window.location = $(this).data('href');
+            return false;
+        });
+    });
+</script>
+}@{
+    Layout.Title = T("Orders");
+}
+
+<table class="items" summary="@T("This is a table of the orders of the current customer in your application")">
+        <colgroup>
+            <col id="Col1" />
+            <col id="Col2" />
+            <col id="Col3" />
+            <col id="Col4" />
+            <col id="Col5" />
+            <col id="Col6" />
+            <col id="Col7" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="col">&nbsp;&darr;</th>
+                <th scope="col">@T("Number")</th>
+                <th scope="col">@T("Status")</th>
+                <th scope="col" style="text-align:right">@T("Total")</th>
+                <th scope="col">@T("Created")</th>
+                <th scope="col">@T("Paid")</th>
+                <th scope="col">@T("Actions")</th>
+            </tr>
+        </thead>
+        @foreach (var order in Model)
+        {
+        <tr data-href="@Url.Action("Edit", "OrderAdmin", new { order.Id, returnUrl = Request.Url.PathAndQuery })">
+            <td>@order.Id</td>
+            <td>@order.Number</td>
+            <td>@order.Status</td>
+            <td style="text-align:right">@order.SubTotal.ToString("c")</td>
+            <td>@order.CreatedAt</td>
+            <td>@order.PaidAt</td>
+            <td>
+                <div>
+                    <a href="@Url.Action("Edit", "OrderAdmin", new { order.Id, returnUrl = Request.Url.PathAndQuery })" title="@T("Edit")">@T("Edit")</a>
+                </div>
+            </td>
+        </tr>
+        } 
+    </table>

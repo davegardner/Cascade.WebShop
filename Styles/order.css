@@ -1,0 +1,96 @@
+﻿.order-wrapper {
+    padding: 10px;
+    border: 1px dashed #ccc;    
+}
+ 
+article.order {
+    width: 100%;
+}
+ 
+article.order > header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #ccc;
+}
+ 
+article.order > header ul {
+    list-style: none;
+    margin: 0;
+}
+ 
+article.order > header ul li:after {
+    clear:both;
+    height:0;
+    content:".";
+    display:block;
+    visibility:hidden;
+    zoom:1;
+}
+ 
+article.order > header ul li .field-label {
+    float: left;
+    width: 100px;
+    font-weight: bold;
+}
+ 
+article.order > header ul li .field-value {
+    float: left;
+}
+ 
+article.order table {
+    width: 100%;   
+}
+ 
+article.order td {
+    padding: 7px 3px 4px 4px;
+    vertical-align: middle;
+}
+ 
+article.order table thead td {
+    background: #f6f6f6;
+    font-weight: bold;
+}
+ 
+article.order table tfoot tr.separator td {
+    border-bottom: 1px solid #ccc;
+}
+ 
+article.order table tfoot td {
+    font-weight: bold;
+}
+ 
+article.order footer {
+    margin-top: 20px;
+}
+ 
+article.order td.numeric {
+    width: 75px;
+    text-align: right;
+}
+ 
+article.addresses {
+    margin: 10px 0 10px 0;
+    padding: 0 40px 10px 20px;
+}
+ 
+article.addresses:after {
+    clear:both;
+    height:0;
+    content:".";
+    display:block;
+    visibility:hidden;
+    zoom:1;
+}
+ 
+article.addresses .invoice-address{
+    float: left;
+}
+ 
+article.addresses .shipping-address{
+    float: right;
+}
+ 
+ul.address-fields {
+    margin: 0;
+    list-style: none;   
+}

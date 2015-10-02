@@ -1,0 +1,39 @@
+﻿@using System.Web.Mvc.Html
+@using System.Web.Mvc
+@using Cascade.WebShop.ViewModels
+@{
+    var login = (LoginViewModel)Model.Login;
+
+    Style.Require("Cascade.WebShop.Common");
+}
+<h2>@T("Returning customer")</h2>
+@Html.ValidationSummary()
+@using (Html.BeginFormAntiForgeryPost(Url.Action("Login", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    <div class="control-group">
+        <div class="controls">
+            <p>@T("Please sign in:")</p>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="control-label">@Html.LabelFor(m => login.Email, T("Email"))</div>
+        <div class="controls">@Html.EditorFor(m => login.Email)</div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">@Html.LabelFor(m => login.Password, T("Password"))</div>
+        <div class="controls">@Html.EditorFor(m => login.Password)</div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label class="checkbox">
+                @Html.CheckBoxFor(m => login.CreatePersistentCookie)@T("Remember me next time")</label>
+        </div>
+    </div>
+    <div class="forms-actions">
+        <div class="controls">
+            <a class="btn" href="#">@T("Cancel")</a>
+            <button type="submit" class="btn btn-primary">@T("Sign in")</button>
+        </div>
+    </div>
+}

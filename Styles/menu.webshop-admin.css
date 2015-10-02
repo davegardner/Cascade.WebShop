@@ -1,0 +1,6 @@
+﻿.navicon-webshop {
+background-image:url('../images/menu.webshop.png') !important;
+}
+.navicon-webshop:hover {
+background-position:0 -30px !important;
+}

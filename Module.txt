@@ -1,0 +1,14 @@
+﻿Name: Cascade.WebShop
+AntiForgery: enabled
+Author: Dave Gardner
+Website: http://cascadepixels.com.au
+Version: 1.0
+OrchardVersion: 1.5
+Category: Commerce
+Description: Web Shop
+Dependencies: Orchard.Projections, Orchard.Forms, Orchard.jQuery, AIM.LinqJs.jQuery, Orchard.Knockout, Orchard.Users, Orchard.Email
+Features:
+    Cascade.WebShop.SimulatedPSP:
+        Name: Simulated Payment Service Provider
+        Description: Provides a simulated payment service for WebShop testing
+        Category: Commerce

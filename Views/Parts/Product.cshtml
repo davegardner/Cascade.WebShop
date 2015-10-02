@@ -1,0 +1,7 @@
+﻿@{
+    var price = (decimal) Model.Price;
+    var sku = (string) Model.Sku;
+}
+<article>
+    <p>Price: @price.ToString("c") <span class="pull-right">@sku</span></p>
+</article>

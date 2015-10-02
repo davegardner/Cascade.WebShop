@@ -1,0 +1,12 @@
+﻿@{
+    Style.Require("Cascade.WebShop.Common");
+}
+<article>
+    <p>@T("Are you a returning customer or a new customer?")</p>
+    
+    <ul class="action bullets">
+        <li><a href="@Url.Action("Login", "Checkout", new { area = "Cascade.WebShop" })">I am a <strong>returning customer</strong> and already have an account</a></li>
+        <li><a href="@Url.Action("Signup", "Checkout", new { area = "Cascade.WebShop" })">I am a <strong>new customer</strong></a></li>
+    </ul>
+    <p>&nbsp;</p>
+</article>

@@ -1,0 +1,17 @@
+﻿@{
+    Script.Require("Globalize.SetCulture");
+    Script.Require("WebShop.Summary");
+    Style.Require("Cascade.WebShop.ShoppingCartWidget");
+
+    var itemCount = (int)Model.ItemCount;
+    var totalAmount = (decimal)Model.TotalAmount;
+    var url = (string) Model.ContinueShoppingUrl;
+}
+<article class="summary" id="shoppingCartSummary"
+         data-load-shoppingcart-url="@Url.Action("GetSummary", "ShoppingCart", new { area = "Cascade.WebShop" })" 
+    >
+    <div>
+        <p data-bind="visible: itemCount() == 0" class="empty">Empty. Please visit our <a href="@Url.Content(url)">gallery</a></p>
+        <p data-bind="visible: itemCount() > 0"><span class="value" data-bind="text: itemCount"></span> items total <span data-bind = "text: Globalize.format(totalAmount(), 'c')" ></span > <a class="btn btn-small btn-primary pull-right" href="@Url.Action("Index", "ShoppingCart", new {area = "Cascade.WebShop"})"><i class="icon-shopping-cart"></i></a></p>
+    </div>
+</article>

@@ -1,0 +1,133 @@
+﻿@using Cascade.WebShop.Models
+@using Cascade.WebShop.ViewModels
+@{
+    var editModel = (EditOrderVM)Model.EditModel;
+    var order = (OrderRecord)Model.Order;
+    var details = (IList<dynamic>)Model.Details;
+    var quantity = 0;
+    var customerName = (string)Model.CustomerName;
+    var customerAddress1 = (string)Model.CustomerAddress1;
+    var customerAddress2 = (string)Model.CustomerAddress2;
+    var customerCountry = (string)Model.CustomerCountry;
+
+    var shippingName = (string)Model.ShippingName;
+    var shippingAddress1 = (string)Model.ShippingAddress1;
+    var shippingAddress2 = (string)Model.ShippingAddress2;
+    var shippingCountry = (string)Model.ShippingCountry;
+    Layout.Title = "Edit Order";
+}
+<h1>Order Number @order.Number</h1>
+
+@using (Html.BeginFormAntiForgeryPost())
+{
+    @Html.Hidden("Id", editModel.Id)
+    <fieldset>
+        <legend>Edit Order Status</legend>
+        <div class="editor-label">@Html.Label("Status")</div>
+        <div class="editor-field">
+            <select name="Status">
+                @Html.SelectOption(order.Status, OrderStatus.New, "New")
+                @Html.SelectOption(order.Status, OrderStatus.Paid, "Paid")
+                @Html.SelectOption(order.Status, OrderStatus.Completed, "Completed")
+                @Html.SelectOption(order.Status, OrderStatus.Cancelled, "Cancelled")
+            </select>
+        </div>
+    </fieldset>
+    <button type="submit">
+        Save</button>
+}
+<br />
+<br />
+<fieldset>
+    <legend>Customer and Shipping Details</legend>
+    <table style="width: 99%;">
+        <tr>
+            <td style="width: 30%">
+                <strong>Customer invoice address:</strong>
+            </td>
+            <td>
+                <strong>Shipping address:</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <ul>
+                    <li>@customerName</li>
+                    <li>@customerAddress1</li>
+                    <li>@customerAddress2</li>
+                    <li>@customerCountry</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>@shippingName</li>
+                    <li>@shippingAddress1</li>
+                    <li>@shippingAddress2</li>
+                    <li>@shippingCountry</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</fieldset>
+<br />
+<br />
+<fieldset>
+    <legend>Order Details</legend>
+    <table class="items" summary="@T("This is a table of the order details of the current order")">
+        <colgroup>
+            <col id="Col1" />
+            <col id="Col2" />
+            <col id="Col3" />
+            <col id="Col4" />
+            <col id="Col5" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="col">@T("Sku")
+                </th>
+                <th scope="col">@T("Description")
+                </th>
+                <th scope="col">@T("Price")
+                </th>
+                <th scope="col">@T("Quantity")
+                </th>
+                <th scope="col" style="text-align: right">@T("Total")
+                </th>
+            </tr>
+        </thead>
+        @foreach (var detail in details)
+        {
+            quantity += detail.Quantity;
+            decimal subtotal = detail.Quantity * detail.Price;
+            <tr>
+                <td>@detail.Sku
+                </td>
+                <td>@detail.Description
+                </td>
+                <td>@detail.Price.ToString("c")
+                </td>
+                <td>@detail.Quantity
+                </td>
+                <td style="text-align: right">@subtotal.ToString("c")
+                </td>
+            </tr>
+        }
+        <tfoot>
+            <tr>
+                <td>
+                    <strong>Totals</strong>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                    <strong>@quantity</strong>
+                </td>
+                <td style="text-align: right">
+                    <strong>@order.SubTotal.ToString("c")</strong>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</fieldset>

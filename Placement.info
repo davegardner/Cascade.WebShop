@@ -1,0 +1,16 @@
+﻿<Placement>
+  <Place Parts_Product_Edit="Content:1" />
+  <Place Parts_Product="Content:0" />
+  <Place Parts_Product_AddButton="Content:after" />
+  <Place Parts_ShoppingCartWidget="Content:0" />
+  <Place Parts_Customer_Edit="Content:0" />
+  <Place Parts_Address_Edit="Content:0" />
+  <Match DisplayType="SummaryAdmin">
+    <Place Parts_Product_AddButton="-" />
+    <Place Parts_Product="-" />
+    <Place Parts_Product_SummaryAdmin="Content:0" />
+  </Match>
+  <Place Parts_WebShop_Settings_Edit="Content:0" />
+  <Place Parts_ShippingProduct_Edit="Content:0" />
+  <Place Parts_ShippingProduct="Content:0" />
+</Placement>

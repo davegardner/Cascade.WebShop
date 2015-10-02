@@ -1,0 +1,47 @@
+﻿@model Cascade.WebShop.ViewModels.AddressViewModel
+@{
+    string title = ViewData.ModelMetadata.GetDisplayName();
+    for(int i = 1; i < title.Length; i++)
+    {
+        if( title[i] >= 'A' && title[i] <= 'Z')
+        {
+            title = title.Insert(i, " ");
+            i++;
+        }
+    }
+}
+
+<style>
+    /* pull control-groups closer together (default bottom-margin: 18px) */
+    .tight
+    {
+        margin-bottom: 2px !important;
+    }
+</style>
+
+<h4>@title</h4>
+<div class="control-group tight">
+    <div class="control-label">@Html.LabelFor(m => m.Name, T("Name"))</div>
+    <div class="controls">@Html.EditorFor(m => m.Name)</div>
+</div>
+<div class="control-group tight">
+    <div class="control-label">@Html.LabelFor(m => m.Address, T("Address"))</div>
+    <div class="controls multiline">@Html.EditorFor(m => m.Address)</div>
+</div>
+<div class="control-group tight">
+    <div class="control-label">@Html.LabelFor(m => m.City, T("City"))</div>
+    <div class="controls">@Html.EditorFor(m => m.City)</div>
+</div>
+<div class="control-group tight">
+    <div class="control-label">@Html.LabelFor(m => m.State, T("State"))</div>
+    <div class="controls">@Html.EditorFor(m => m.State)</div>
+</div>
+<div class="control-group tight">
+    <div class="control-label">@Html.LabelFor(m => m.Postcode, T("Postcode"))</div>
+    <div class="controls">@Html.EditorFor(m => m.Postcode)</div>
+</div>
+<div class="control-group tight">
+    <div class="control-label">@Html.LabelFor(m => m.CountryCode, T("Country"))</div>
+    <div class="controls">@Html.DropDownListFor(m => m.CountryCode, new SelectList(Model.CountryCodes, "Value", "Text", Model.CountryCode))</div>
+</div>
+

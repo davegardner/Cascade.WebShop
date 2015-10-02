@@ -1,0 +1,15 @@
+﻿@model Cascade.WebShop.Models.ShippingProductPart
+
+<fieldset>
+    <legend>Shipping Product</legend>
+    <div class="sameLine medium">
+        @Html.LabelFor(m => m.Title)
+        @Html.TextBoxFor(m => m.Title, new { @class = "large text" })
+        @Html.ValidationMessageFor(m => m.Title)
+    </div>
+    <div class="sameLine medium">
+        @Html.LabelFor(m => m.Description)
+        @Html.TextBoxFor(m => m.Description, new { @class = "large text" })
+        @Html.ValidationMessageFor(m => m.Description)
+    </div>
+</fieldset>

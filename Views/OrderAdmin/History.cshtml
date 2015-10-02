@@ -1,0 +1,72 @@
+﻿@using Cascade.WebShop.Models
+@{
+    var transactions = (IEnumerable<TransactionRecord>)Model.History;
+    Layout.Title = T("Transaction History");
+}
+<table class="items" summary="@T("This is a table of the transaction history of the current order")">
+    <colgroup>
+        <col id="Col1" />
+        <col id="Col2" />
+        <col id="Col3" />
+        <col id="Col4" />
+        <col id="Col5" />
+        <col id="Col6" />
+      @*  <col id="Col7" />
+        <col id="Col8" />
+        <col id="Col9" />
+        <col id="Col10" />
+        <col id="Col11" />*@
+    </colgroup>
+    <thead>
+        <tr>
+        @*    <th scope="col">
+                &nbsp;&darr;
+            </th>
+        *@  
+            <th scope="col">@T("Method")
+            </th>
+            <th scope="col">@T("Ack")
+            </th>
+         @*   <th scope="col">@T("Payer Id")
+            </th>
+            <th scope="col">@T("Request Transaction Id")
+            </th>*@
+            <th scope="col">@T("Date Time")
+            </th>
+             <th scope="col">@T("Correlation Id")
+            </th>
+            <th scope="col">@T("Error Code")
+            </th>
+            <th scope="col">@T("Short Message")
+            </th>
+            <th scope="col">@T("Long Message")
+            </th>
+        </tr>
+    </thead>
+    @foreach (var transaction in transactions)
+    {
+        <tr>
+            @*<td>@transaction.Id
+            </td>*@
+            <td>@transaction.Method
+            </td>
+            <td>@transaction.Ack
+            </td>
+            @*<td>@transaction.PayerId
+            </td>
+            <td>@transaction.RequestTransactionId
+            </td>*@
+            <td>@transaction.DateTime
+            </td>
+            <td>@transaction.CorrelationId
+            </td>
+             <td>@transaction.ErrorCodes
+            </td>
+            <td>@transaction.ShortMessages
+            </td>
+            <td>@transaction.LongMessages
+            </td>
+        </tr>
+    }
+</table>
+@Display(Model.Pager)

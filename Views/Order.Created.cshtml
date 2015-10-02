@@ -1,0 +1,97 @@
+﻿@using System.Globalization
+@using Orchard.ContentManagement
+@using Orchard.Core.Title.Models
+@* @using Orchard.Core.Routable.Models *@
+@using Cascade.WebShop.Models
+@{
+    Style.Require("WebShop.Order");
+ 
+    var order = (OrderRecord) Model.Order;
+    var productParts = (IList<ProductPart>) Model.Products;
+    var invoiceAddress = Model.InvoiceAddress;
+    var shippingAddress = Model.ShippingAddress;
+}
+<h2>@T("Order {0} has been created", order.Number)</h2>
+<p>@T("Please find your order details below")</p>
+ 
+<div class="order-wrapper">
+    <article class="order">
+        <header>
+            <ul>
+                <li>
+                    <div class="field-label">Order Number</div>
+                    <div class="field-value">@order.Number</div>
+                </li>
+                <li>
+                    <div class="field-label">Created</div>
+                    <div class="field-value">@order.CreatedAt.ToString(CultureInfo.InvariantCulture)</div>
+                </li>
+            </ul>
+        </header>
+        <table>
+            <thead>
+                <tr>
+                    <td>Article</td>
+                    <td class="numeric">Unit Price</td>
+                    <td class="numeric">Quantity</td>
+                    <td class="numeric">Total Price</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in order.Details) {
+                    var productPart = productParts.Single(x => x.Id == detail.ProductPartRecord_Id);
+                    var titlePart = productPart.As<TitlePart>();
+                    var productTitle = titlePart != null ? titlePart.Title : "(No TitlePart attached)";
+                    //var routePart = productPart.As<RoutePart>();
+                    //var productTitle = routePart != null ? routePart.Title : "(No RoutePart attached)";
+                    <tr>
+                        <td>@productTitle</td>
+                        <td class="numeric">@detail.UnitPrice.ToString("c")</td>
+                        <td class="numeric">@detail.Quantity</td>
+                        <td class="numeric">@detail.SubTotal.ToString("c")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="separator"><td colspan="4">&nbsp;</td></tr>
+                <tr>
+                    <td class="numeric label" colspan="2">Subtotal:</td>
+                    <td class="numeric">@order.SubTotal.ToString("c")</td>
+                </tr>
+                <tr>
+                    <td class="numeric label" colspan="2">GST:</td>
+                    <td class="numeric">@order.GST.ToString("c")</td>
+                </tr>
+                <tr>
+                    <td class="numeric label" colspan="2">Total:</td>
+                    <td class="numeric">@order.Total.ToString("c")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </article>
+    
+    <article class="addresses form">
+        <div class="invoice-address">
+            <h2>Invoice Address</h2>
+            <ul class="address-fields">
+                <li>@invoiceAddress.Name.Value</li>
+                <li>@invoiceAddress.Address.Value</li>
+                <li>@invoiceAddress.City.Value</li>
+                <li>@invoiceAddress.State.Value</li>
+                <li>@invoiceAddress.Postcode.Value</li>
+                <li>@invoiceAddress.Country.Value</li>
+            </ul>
+        </div>
+        <div class="shipping-address">
+            <h2>Shipping Address</h2>
+            <ul class="address-fields">
+                <li>@shippingAddress.Name.Value</li>
+                <li>@shippingAddress.Address.Value</li>
+                <li>@shippingAddress.City.Value</li>
+                <li>@shippingAddress.State.Value</li>
+                <li>@shippingAddress.Postcode.Value</li>
+                <li>@shippingAddress.Country.Value</li>
+            </ul>
+        </div>
+    </article>
+</div>

@@ -1,0 +1,34 @@
+﻿@model Cascade.WebShop.Models.CustomerPart
+@{
+    var User = Model.User;
+}
+<fieldset>
+    <legend>Customer</legend>
+    <div class="editor-label">@Html.LabelFor(x => x.Title)</div>
+    <div class="editor-field">@Html.EditorFor(x => x.Title)</div>
+    <div class="editor-label">@Html.LabelFor(x => x.FirstName)</div>
+    <div class="editor-field">
+        @Html.EditorFor(x => x.FirstName)
+        @Html.ValidationMessageFor(x => x.FirstName)
+    </div>
+    <div class="editor-label">@Html.LabelFor(x => x.LastName)</div>
+    <div class="editor-field">
+        @Html.EditorFor(x => x.LastName)
+        @Html.ValidationMessageFor(x => x.LastName)
+    </div>
+   @* <div class="editor-label">@Html.LabelFor(x => x.User.Email)</div>
+    <div class="editor-field">
+        @Html.DisplayTextFor(x => x.User.Email)
+        @Html.ValidationMessageFor(x => x.User.Email)
+    </div>*@
+    <br />
+    <div class="editor-label">Email: @Html.DisplayFor(x => x.User.Email)</div>
+    <div class="hint">@T("To change the email address edit the <a href='../../../Admin/Users/Edit/{0}'>User</a> (rather than the Customer)", User.Id)</div>
+    <br />
+    <label class="checkbox">
+        @Html.CheckBoxFor(m => m.SubscribeToMailingList)@T("Subscribed to mailing list")</label>
+    <label class="checkbox">
+        @Html.CheckBoxFor(m => m.ReceivePost)@T("Receive snail mail")</label>    
+    <label class="checkbox">
+        @Html.CheckBoxFor(m => m.AgreeTermsAndConditions)@T("Agreed to terms and conditions at signup")</label>
+</fieldset>

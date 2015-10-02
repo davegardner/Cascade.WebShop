@@ -1,0 +1,12 @@
+﻿
+ 
+article.widget-shopping-cart-widget article span.label{
+    width: 60px;
+    font-style: italic;
+    color: #aaa;
+    display: inline-block;
+}
+
+button.addtocart {
+    margin-left: 10px;
+}

@@ -1,0 +1,50 @@
+﻿@model IList<Cascade.WebShop.Models.AddressPart>
+@{
+    Script.Require("jQuery");
+    Layout.Title = T("Addresses");
+}
+@using (Script.Foot())
+{ 
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Make the row react as if it was a link.
+        $('table tr[data-href]').css('cursor', 'pointer');
+
+        $('table tr[data-href]').click(function () {
+            window.location = $(this).data('href');
+            return false;
+        });
+    });
+</script>
+    }
+
+<table class="items" summary="@T("This is a table of the addresses of the current customer in your application")">
+    <colgroup>
+        <col id="Col1" />
+        <col id="Col2" />
+        <col id="Col3" />
+        <col id="Col4" />
+    </colgroup>
+    <thead>
+        <tr>
+            <th scope="col">&nbsp;&darr;</th>
+            <th scope="col">@T("Type")</th>
+            <th scope="col">@T("Address")</th>
+            <th scope="col">@T("Actions")</th>
+        </tr>
+    </thead>
+    @foreach (var address in Model) {
+        var fulladdress = address.Address + ", " +  address.City + " " + address.Postcode + " " + address.State + ", " + address.Country;
+
+    <tr data-href="@Url.Action("Edit", "AddressAdmin", new {address.Id})">
+        <td>@address.Id</td>
+        <td>@address.Type</td>
+        <td>@fulladdress</td>
+        <td>
+            <div>
+                <a href="@Url.Action("Edit", "AddressAdmin", new {address.Id})" title="@T("Edit")">@T("Edit")</a>
+            </div>
+        </td>
+    </tr>
+    } 
+</table>

@@ -1,0 +1,7 @@
+﻿ul.commands {
+    list-style: none;
+}
+ 
+ul.commands button {
+    width: 100px;
+}

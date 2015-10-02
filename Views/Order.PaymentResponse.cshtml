@@ -1,0 +1,16 @@
+﻿@using Cascade.WebShop.Extensibility
+@using Cascade.WebShop.Models
+@{
+    var order = (OrderRecord) Model.Order;
+    var paymentResponse = (PaymentResponse) Model.PaymentResponse;  
+}
+@if (paymentResponse.Status == PaymentResponseStatus.Success)
+{
+    <h2>@T("Payment was succesful")</h2>
+    <p>Thanks! We succesfully received payment for order @order.Number with payment ID @paymentResponse.PaymentReference</p>
+    <p>Enjoy your products and come again!</p>
+}
+else {
+    <h2>@T("Order cancelled")</h2>
+    <p>Your order (@order.Number) has been cancelled</p>
+}

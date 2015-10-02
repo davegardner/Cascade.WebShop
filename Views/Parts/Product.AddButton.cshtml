@@ -1,0 +1,16 @@
+﻿@{
+    var productId = (int)Model.ProductId;
+    Script.Require("AddToShoppingCart");
+    
+}
+<article class="addtocartbuttons" 
+         data-addtocart-url="@Url.Action("AddToCart", "ShoppingCart", new { area = "Cascade.WebShop" })"
+         >
+
+@using (Html.BeginFormAntiForgeryPost(Url.Action("Add", "ShoppingCart", new { id = productId, area="Cascade.WebShop" })))
+{
+    <button type="button" class="btn btn-small" onclick="addToCart(@productId)"><i class="icon-shopping-cart"></i> @T("Add")</button>
+    <button type="submit" class="btn btn-small">@T("Add and view cart")</button>
+}
+
+</article>

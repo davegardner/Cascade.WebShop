@@ -1,0 +1,13 @@
+﻿@model Cascade.WebShop.Models.AddressPart
+@{
+    var line1 = Model.Address;
+    var line2 = Model.City + " " + Model.Postcode + " " + Model.State;
+    var line3 = Model.Country;
+}           
+<fieldset>
+    <legend><h2>@Html.DisplayFor(x => x.Type)</h2></legend>
+    <div class="editor-field">@Html.DisplayFor(x=>x.Name)</div>
+    <div class="editor-field">@line1</div>
+    <div class="editor-field">@line2</div>
+    <div class="editor-field">@line3</div>
+</fieldset>

@@ -1,0 +1,21 @@
+﻿@using System.Web.Mvc.Html
+@using System.Web.Mvc
+@using Cascade.WebShop.ViewModels
+@{
+    var addresses = (AddressesViewModel)Model.Addresses;
+
+    Style.Require("Cascade.WebShop.Common");
+}
+<h2>
+    Address Details</h2>
+<p>@T("Please provide us with your invoice address and shipping address. If both addresses are the same, then you only need to provide us with your invoice address.")</p>
+@using (Html.BeginFormAntiForgeryPost(Url.Action("SelectAddress", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.EditorFor(m => addresses.InvoiceAddress)
+    @Html.EditorFor(m => addresses.ShippingAddress)
+    
+    <div class="well form-actions" >
+        <a class="button catalog" href="@Model.ContinueShoppingUrl">Return to shopping</a>
+        <button type="submit" class="btn btn-primary pull-right">@T("Finish")</button>
+    </div>
+}

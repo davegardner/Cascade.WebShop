@@ -1,0 +1,23 @@
+﻿@{
+    var orderReference = (string) Model.OrderReference;
+    var amount = (decimal)((int) Model.Amount) / 100;
+    var commands = new[] { "Success", "Failure", "Cancelled", "Exception" };
+ 
+    Style.Require("Webshop.SimulatedPSP");
+}
+ 
+<h2>Payment Service Provider Simulation</h2>
+<p>
+    Received a payment request with order reference <strong>@orderReference</strong><br/>
+    Amount: <strong>@amount.ToString("c")</strong>
+</p>
+@using (Html.BeginFormAntiForgeryPost(Url.Action("Command", "SimulatedPaymentServiceProvider", new {area = "Cascade.WebShop"}))) {
+    <article class="form">
+        <input type="hidden" name="orderReference" value="@orderReference"/>
+        <ul class="commands">
+            @foreach (var command in commands) {
+                <li><button type="submit" name="command" value="@command">@command</button></li>
+            }
+        </ul>
+    </article>
+}

@@ -1,0 +1,9 @@
+﻿@{
+    var price = (decimal)Model.Price;
+    var sku = (string)Model.Sku;
+    int inStock = Model.InStock;
+    int numberSold = Model.NumberSold;
+    bool canReorder = Model.CanReorder;
+    int reorderLevel = Model.ReorderLevel;
+}
+ <strong>Sku:</strong> @sku | <strong>Price:</strong> @price.ToString("c") | <strong>In Stock:</strong> @inStock | <strong>Number Sold:</strong> @numberSold | <strong>Can Reorder?</strong> @canReorder | <strong>Reorder Level:</strong> @reorderLevel

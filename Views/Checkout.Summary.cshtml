@@ -1,0 +1,184 @@
+﻿@using Orchard.ContentManagement
+@using Cascade.WebShop.Models
+@{
+    //Style.Require("Cascade.WebShop.Checkout.Summary");
+    var shoppingCart = Model.ShoppingCart;
+    var invoiceAddress = Model.InvoiceAddress;
+    var shippingAddress = Model.ShippingAddress;
+    var items = (IList<dynamic>)shoppingCart.ShopItems;
+    var subtotal = (decimal)shoppingCart.Subtotal;
+    var vat = (decimal)shoppingCart.GST;
+    var total = (decimal)shoppingCart.Total;
+    var ship = shippingAddress == null ? "none" : "block";
+    var continueShopping = Model.ContinueShoppingUrl;
+    //var formattedInvoiceAddress = Model.FormattedInvoiceAddress;
+    //var formattedShippingAddress = Model.FormattedShippingAddress;
+
+}
+@if (!items.Any())
+{
+    <p>
+        You don't have any items in your shopping cart.
+    </p>
+    <a class="button" href="@continueShopping">Continue shopping</a>
+}
+else
+{
+    <h2>
+        Review your order
+    </h2>
+    <p>
+        Please review the information below, then click the <strong>Place Order</strong>
+        button to proceed to payment.
+    </p>
+
+    <article class="shoppingcart">
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Article</th>
+                    <th><span class="pull-right">Unit Price</span></th>
+                    <th><span class="pull-right">Quantity</span></th>
+                    <th><span class="pull-right">Total Price</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @* Everything EXCEPT shipping items *@
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    var product = (ProductPart)item.Product;
+                    if (product.TypeDefinition.Name != "ShippingProduct")
+                    {
+                        var contentItem = (ContentItem)item.ContentItem;
+                        var title = item.Title;
+                        var quantity = (int)item.Quantity;
+                        var unitPrice = product.UnitPrice;
+                        var totalPrice = quantity * unitPrice;
+                        var sku = product.Sku;
+                        <tr>
+                            <td>@sku</td>
+                            <td>
+                                @title
+                        </td>
+                        <td>
+                            <span class="pull-right">@unitPrice.ToString("c")</span>
+                        </td>
+                        <td>
+                            <span class="pull-right">@quantity</span>
+                        </td>
+                        <td>
+                            <span class="pull-right">@totalPrice.ToString("c")</span>
+                        </td>
+                    </tr>
+                    }
+                }
+
+                @* Shipping items *@
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    var product = (ProductPart)item.Product;
+                    if (product.TypeDefinition.Name == "ShippingProduct")
+                    {
+                        var contentItem = (ContentItem)item.ContentItem;
+                        var title = "Shipping: " + item.Title;
+                        var quantity = (int)item.Quantity;
+                        var unitPrice = product.UnitPrice;
+                        var totalPrice = quantity * unitPrice;
+                        var sku = product.Sku;
+                        <tr>
+                            <td>@sku</td>
+                            <td>
+                                @title
+                        </td>
+                        <td>
+                            <span class="pull-right">@unitPrice.ToString("c")</span>
+                        </td>
+                        <td>
+                            <span class="pull-right">@quantity</span>
+                        </td>
+                        <td>
+                            <span class="pull-right">@totalPrice.ToString("c")</span>
+                        </td>
+                    </tr>
+                    }
+                }
+
+                <tr class="separator">
+                    <td colspan="4">
+                        &nbsp;
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot class="well well-small">
+                @* This is not needed if GST is included
+                    <tr>
+                         <td class="numeric label" colspan="3">Total (incl GST):</td>
+                         <td class="numeric">@subtotal.ToString("c")</td>
+                         <td></td>
+                     </tr>*@
+                <tr>
+                    <td colspan="4">
+                        GST included (10%):&nbsp;
+                    </td>
+                    <td>
+                        <span class="pull-right">@vat.ToString("c")</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        Total (inc GST):&nbsp;
+                    </td>
+                    <td class="numeric">
+                        <span class="pull-right">@total.ToString("c")</span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </article>
+
+    <article class="well">
+        <div class="row">
+            <div class="span4">
+                <h6>
+                    Invoice
+                    @if (ship == "none")
+                    { <text>and Shipping </text>} Address
+                </h6>
+                <address>
+                    @invoiceAddress.Name<br />
+                    @invoiceAddress.Address<br />
+                    @invoiceAddress.City @invoiceAddress.State @invoiceAddress.Postcode<br />
+                    @invoiceAddress.Country
+                </address>
+            </div>
+            @if (ship != "none")
+            {
+                <div class="span4">
+                    <h6>
+                        Shipping Address
+                    </h6>
+                    <address>
+                        @shippingAddress.Name<br />
+                        @shippingAddress.Address<br />
+                        @shippingAddress.City @shippingAddress.State @shippingAddress.Postcode<br />
+                        @shippingAddress.Country
+                    </address>
+                </div>
+            }
+        </div>
+    </article>
+    <article>
+        @using (Html.BeginFormAntiForgeryPost(Url.Action("Create", "Order", new { area = "Cascade.WebShop" }), FormMethod.Post))
+        {
+            <div class="well form-actions ">
+                <a class="button catalog" href="@Model.ContinueShoppingUrl">Continue shopping</a>
+                <button type="submit" class="btn btn-primary pull-right">
+                    Place Order
+                </button>
+            </div>
+        }
+    </article>
+}

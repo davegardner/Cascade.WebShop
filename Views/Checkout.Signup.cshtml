@@ -1,0 +1,65 @@
+﻿@using System.Web.Mvc.Html
+@using System.Web.Mvc
+@using Cascade.WebShop.ViewModels
+@{
+    var signup = (SignupViewModel)Model.Signup;
+
+    Style.Require("Cascade.WebShop.Common");
+
+    string showTerms = signup.ShowAcceptTerms ? "block" : "none";
+    string showSubscribe = signup.ShowReceiveNewsletter ? "block" : "none";
+}
+<h2>@T("New customer")</h2>
+<p class="text-info">@T("Please provide some basic details so we can recognize you:")</p>
+@Html.ValidationSummary()
+@using (Html.BeginFormAntiForgeryPost(Url.Action("Signup", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    <article>
+        @Html.HiddenFor(m => signup.ShowReceiveNewsletter)
+        @Html.HiddenFor(m => signup.ShowAcceptTerms)
+        @Html.HiddenFor(m => signup.PrivacyUrl)
+        @Html.HiddenFor(m => signup.TermsAndConditionsUrl)
+        @Html.HiddenFor(m => signup.ContinueShoppingUrl)
+        <div class="control-group">
+            <div class="control-label">@Html.LabelFor(m => signup.Title, T("Title"))</div>
+            <div class="controls">@Html.EditorFor(m => signup.Title)</div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">@Html.LabelFor(m => signup.FirstName, T("First name"))</div>
+            <div class="controls">@Html.EditorFor(m => signup.FirstName)</div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">@Html.LabelFor(m => signup.LastName, T("Last name"))</div>
+            <div class="controls">@Html.EditorFor(m => signup.LastName)</div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">@Html.LabelFor(m => signup.Email, T("Email"))</div>
+            <div class="controls wide">@Html.EditorFor(m => signup.Email)</div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">@Html.LabelFor(m => signup.Password, T("Password"))</div>
+            <div class="controls">@Html.EditorFor(m => signup.Password)</div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">@Html.LabelFor(m => signup.RepeatPassword, T("Repeat password"))</div>
+            <div class="controls">@Html.EditorFor(m => signup.RepeatPassword)</div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label class="forcheckbox" style='display: @showSubscribe'>@Html.CheckBoxFor(m => signup.ReceiveNewsletter)
+                    @T("Subscribe to our mailing list")</label>
+                <label class="forcheckbox" style='display: @showSubscribe'>@Html.CheckBoxFor(m => signup.ReceivePost)
+                    @T("Receive occasional snail mail (such as invitations to openings and other events)")</label>
+                <label class="forcheckbox" style='display: @showTerms'>@Html.CheckBoxFor(m => signup.AcceptTerms)
+                    @T("I have read and accept the <a href=\"{0}\" target=\"_blank\">Terms and Conditions</a>", signup.TermsAndConditionsUrl)</label>
+            </div>
+        </div>
+        <footer>
+            <div class="form-actions">
+                    <a class="button catalog" href="@signup.ContinueShoppingUrl">Return to shopping</a>
+                    <button type="submit" class="btn btn-primary pull-right">
+                        Agree and proceed to payment</button>
+            </div>
+        </footer>
+    </article>
+}
