@@ -28,10 +28,12 @@ namespace Cascade.WebShop
             manifest.DefineScript("Globalize.SetCulture").SetUrl("~/Cascade.WebShop/Resource/SetCultureScript").SetDependencies("Globalize.Cultures");
 
             // Define the "shoppingcart" script and set a dependency on the "jQuery" resource
-            manifest.DefineScript("Cascade.WebShop.ShoppingCart").SetUrl("shoppingcart.js").SetDependencies("jQuery", "jQuery_LinqJs", "ko");
+            manifest.DefineScript("Cascade.WebShop.ShoppingCart").SetUrl("shoppingcart.js").SetDependencies("jQuery", "jQuery_LinqJs", "Knockout");
 
             manifest.DefineScript("AddToShoppingCart").SetUrl("addtocartbutton.js").SetDependencies("jQuery");
-            manifest.DefineScript("WebShop.Summary").SetUrl("summary.js").SetDependencies("jQuery", "ko");
+            manifest.DefineScript("WebShop.Summary").SetUrl("summary.js").SetDependencies("jQuery", "Knockout");
+
+            manifest.DefineScript("Knockout").SetUrl("knockout-3.3.0.js", "knockout-3.3.0.debug.js");
         }
     }
 }

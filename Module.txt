@@ -1,12 +1,12 @@
 ﻿Name: Cascade.WebShop
-AntiForgery: enabled
+AntiForgery: disabled
 Author: Dave Gardner
 Website: http://cascadepixels.com.au
-Version: 1.0
-OrchardVersion: 1.5
+Version: 1.0.2
+OrchardVersion: 1.9.1
 Category: Commerce
-Description: Web Shop
-Dependencies: Orchard.Projections, Orchard.Forms, Orchard.jQuery, AIM.LinqJs.jQuery, Orchard.Knockout, Orchard.Users, Orchard.Email
+Description: Orchard eCommerce module. MUST be run under https (to prevent XSRFs). Note that AntForgery must be off to enable the 'Add' Ajax button on the cart.
+Dependencies: Orchard.Projections, Orchard.Forms, Orchard.jQuery, AIM.LinqJs.jQuery, Orchard.Users, Orchard.Email
 Features:
     Cascade.WebShop.SimulatedPSP:
         Name: Simulated Payment Service Provider

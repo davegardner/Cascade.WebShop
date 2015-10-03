@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Cascade.WebShop.Models;
+using Orchard;
+using Orchard.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Orchard;
-using Orchard.ContentManagement;
-using Cascade.WebShop.Models;
 
 namespace Cascade.WebShop.Services
 {
@@ -31,7 +30,7 @@ namespace Cascade.WebShop.Services
                 if (items == null)
                 {
                     items = new List<ShoppingCartItem>();
-                                        
+
                     HttpContext.Session["ShoppingCart"] = items;
                 }
 
@@ -60,19 +59,20 @@ namespace Cascade.WebShop.Services
                     ItemsInternal.Add(item);
 
                     // add the default shipping 'product' to cover packing and shipping costs
-                    var shippingProductId = _webshopSettings.Settings.ShippingProductRecord.Id;
-                    if (_webshopSettings.Settings.ShippingProductRecord != null && product.IsShippable && !ItemsInternal.Exists(i=>i.ProductId == shippingProductId ))
+                    var shippingProductId = _webshopSettings.GetShippingProductRecordId();
+                    if (shippingProductId > 0 && product.IsShippable && !ItemsInternal.Exists(i => i.ProductId == shippingProductId))
                         ItemsInternal.Add(new ShoppingCartItem(shippingProductId, 1));
 
                 }
 
-            }
 
-            // DG: limit of one item because it's easy to click 'Add' multiple times
-            //else
-            //{
-            //    item.Quantity += quantity;
-            //}
+                // DG: Comment this out to limit to one item (because it's easy to click 'Add' multiple times)
+                // TODO: make it a setting
+                else
+                {
+                    item.Quantity += quantity;
+                }
+            }
         }
 
         public void Remove(int productId)
@@ -140,7 +140,7 @@ namespace Cascade.WebShop.Services
             var query = from item in Items
                         from productPart in productParts
                         where productPart.Id == item.ProductId
-                        orderby productPart.Sku descending 
+                        orderby productPart.Sku descending
                         select new ProductQuantity
                         {
                             ProductPart = productPart,

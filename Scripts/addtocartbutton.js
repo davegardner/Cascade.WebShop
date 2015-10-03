@@ -1,11 +1,11 @@
 ﻿//add the product id to the shopping cart on the server (JSON POST with Antiforgery)
 var addToCart = function (productId) {
-    var data = {productId: productId};
     var tokenName = '__RequestVerificationToken';
     var token = $("input[type='hidden'][name='" + tokenName + "']").val(); // getAntiForgeryToken();
     var url = $(".addtocartbuttons").data("addtocart-url");
     var headers = {};
     headers[tokenName] = token;
+    var data = { productId: productId, __RequestVerificationToken: token};
     var config = {
         url: url,
         type: "POST",

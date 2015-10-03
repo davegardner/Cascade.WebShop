@@ -50,6 +50,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="Images\bullets.png" />
     <Content Include="Images\menu.webshop.png" />
     <Content Include="Images\sprites.png" />
@@ -409,6 +410,8 @@
     <Content Include="Scripts\cultures\globalize.culture.zu.js" />
     <Content Include="Scripts\cultures\globalize.cultures.js" />
     <Content Include="Scripts\globalize.js" />
+    <Content Include="Scripts\knockout-3.3.0.debug.js" />
+    <Content Include="Scripts\knockout-3.3.0.js" />
     <Content Include="Scripts\shoppingcart.js" />
     <Content Include="Scripts\summary.js" />
     <Content Include="Styles\common.css" />
@@ -520,6 +523,7 @@
     <Content Include="Views\CustomerAdmin\ListOrders.cshtml" />
     <Content Include="Views\EditorTemplates\Parts\WebShop.Settings.cshtml" />
     <Content Include="Views\EditorTemplates\Parts\ShippingProduct.cshtml" />
+    <Content Include="README.md" />
     <None Include="Views\OrderAdmin\Edit.cshtml" />
     <Content Include="Views\OrderAdmin\Index.cshtml" />
     <Content Include="Views\OrderAdmin\History.cshtml" />

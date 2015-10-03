@@ -11,43 +11,24 @@ namespace Cascade.WebShop
         public int Create()
         {
             SchemaBuilder.CreateTable("ProductRecord", table => table
-
-                // The following method will create an "Id" column for us and set it as the primary key for the table
                 .ContentPartRecord()
-
-                // Create a column named "UnitPrice" of type "decimal"
                 .Column<decimal>("UnitPrice")
-
-                // Create the "Sku" column and specify a maximum length of 50 characters
                 .Column<string>("Sku", column => column.WithLength(50))
-
                 .Column<int>("InStock")
-
                 .Column<int>("NumberSold")
-
                 .Column<bool>("CanReorder")
-
                 .Column<int>("ReorderLevel")
+                .Column<bool>("IsShippable", column => column.WithDefault(true))
                 );
 
-            // Create (or alter) a part called "ProductPart" and configure it to be "attachable".
             ContentDefinitionManager.AlterPartDefinition("ProductPart", part => part
                 .Attachable());
 
-            // Define a new content type called "ShoppingCartWidget"
             ContentDefinitionManager.AlterTypeDefinition("ShoppingCartWidget", type => type
-
-                // Attach the "ShoppingCartWidgetPart"
                 .WithPart("ShoppingCartWidgetPart")
-
-                // In order to turn this content type into a widget, it needs the WidgetPart
                 .WithPart("WidgetPart")
-
-                // It also needs a setting called "Stereotype" to be set to "Widget"
                 .WithSetting("Stereotype", "Widget")
-
                 .WithPart("CommonPart")
-
                 );
 
             SchemaBuilder.CreateTable("CustomerRecord", table => table
@@ -93,7 +74,6 @@ namespace Cascade.WebShop
                 .WithPart("AddressPart")
                 );
 
-
             SchemaBuilder.CreateTable("OrderRecord", t => t
                 .Column<int>("Id", c => c.PrimaryKey().Identity())
                 .Column<int>("CustomerId", c => c.NotNull())
@@ -121,12 +101,10 @@ namespace Cascade.WebShop
                 .Column<Decimal>("GST", c => c.Nullable())
                 .Column<Decimal>("SubTotal", c => c.Nullable())
                 .Column<Decimal>("Total", c => c.Nullable())
-                );
+                .Column<string>("Sku")
+                .Column<string>("Description")
+);
 
-
-            //SchemaBuilder.CreateForeignKey("Order_Customer", "OrderRecord", new[] { "Id" }, "CustomerPartRecord", new[] { "Id" });
-            //SchemaBuilder.CreateForeignKey("OrderDetail_Order", "OrderDetailRecord", new[] { "OrderRecord_Id" }, "OrderRecord", new[] { "Id" });
-            //SchemaBuilder.CreateForeignKey("OrderDetail_Product", "OrderDetailRecord", new[] { "ProductPartRecord_Id" }, "ProductPartRecord", new[] { "Id" });
 
             SchemaBuilder.CreateTable("WebShopSettingsRecord", table => table
                 .ContentPartRecord()
@@ -145,9 +123,9 @@ namespace Cascade.WebShop
                 .Column<string>("MailChimpListName")
                 .Column<string>("MailChimpGroupName")
                 .Column<string>("MailChimpGroupValue")
+                .Column<int>("ShippingProductRecord_id", column => column.Nullable())
             );
 
-            // Creating table TransactionRecord
             SchemaBuilder.CreateTable("TransactionRecord", table => table
                 .Column("Id", DbType.Int32, column => column.PrimaryKey().Identity())
                 .Column("OrderRecord_Id", DbType.Int32)
@@ -166,77 +144,11 @@ namespace Cascade.WebShop
                 .Column("CorrelationId", DbType.String)
                 );
 
-            return 1;
-        }
-
-        //public int UpdateFrom1()
-        //{
-        //    // Creating table ShippingProductRecord
-        //    SchemaBuilder.CreateTable("ShippingProductRecord", table => table
-        //        .ContentPartRecord()
-        //        .Column<string>("Title", c => c.WithLength((100)))
-        //        .Column<string>("Description")
-        //        .Column<decimal>("PriceIncGst", c => c.NotNull())
-        //        .Column<decimal>("GstRate", c => c.NotNull())
-        //        );
-
-        //    SchemaBuilder.AlterTable("WebShopSettingsRecord", table =>
-        //    {
-        //        table.AddColumn<int>("ShippingProductRecord_id", column => column.Nullable());
-        //    });
-
-        //    return 2;
-        //}
-
-        //public int UpdateFrom2()
-        //{
-        //    // Creating table ShippingProductRecord
-        //    SchemaBuilder.CreateTable("ShippingProductRecord", table => table
-        //        .ContentPartRecord()
-        //        .Column<string>("Title", c => c.WithLength((100)))
-        //        .Column<string>("Description")
-        //        .Column<decimal>("PriceIncGst", c => c.NotNull())
-        //        .Column<decimal>("GstRate", c => c.NotNull())
-        //        );
-        //    return 3;
-        //}
-
-        //public int UpdateFrom3()
-        //{
-        //    SchemaBuilder.AlterTable("CustomerRecord", table =>
-        //    {
-        //        table.AddColumn<bool>("ReceivePost", c => c.WithDefault(false));
-        //    });
-        //    return 4;
-        //}
-        //public int UpdateFrom4()
-        //{
-        //    SchemaBuilder.AlterTable("WebShopSettingsRecord", table =>
-        //    {
-        //        table.AddColumn<bool>("UseMailChimp");
-        //        table.AddColumn<string>("MailChimpApiKey");
-        //        table.AddColumn<string>("MailChimpListName");
-        //        table.AddColumn<string>("MailChimpGroupName");
-        //        table.AddColumn<string>("MailChimpGroupValue");
-        //    });
-        //    return 5;
-        //}
-
-        public int UpdateFrom5()
-        {
-            // Creating table ShippingProductRecord
             SchemaBuilder.CreateTable("ShippingProductRecord", table => table
                 .ContentPartRecord()
                 .Column<string>("Title", c => c.WithLength((100)))
                 .Column<string>("Description")
-                //.Column<decimal>("PriceIncGst", c => c.NotNull())
-                //.Column<decimal>("GstRate", c => c.NotNull())
                 );
-
-            SchemaBuilder.AlterTable("WebShopSettingsRecord", table =>
-            {
-                table.AddColumn<int>("ShippingProductRecord_id", column => column.Nullable());
-            });
 
             ContentDefinitionManager.AlterPartDefinition("ShippingProductPart", part =>
                 part.Attachable());
@@ -248,28 +160,7 @@ namespace Cascade.WebShop
                 .Creatable()
                 );
 
-            return 6;
-        }
-
-        public int UpdateFrom6()
-        {
-            SchemaBuilder.AlterTable("ProductRecord", table =>
-                {
-                    table.AddColumn<bool>("IsShippable", column => column.WithDefault(true));
-                });
-
-            return 7;
-        }
-
-        public int UpdateFrom7()
-        {
-            SchemaBuilder.AlterTable("OrderDetailRecord", table =>
-            {
-                table.AddColumn<string>("Sku");
-                table.AddColumn<string>("Description");
-            });
-
-            return 8;
+            return 1;
         }
     }
 }

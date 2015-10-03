@@ -12,6 +12,7 @@ namespace Cascade.WebShop.Services
         bool GetShowSubscribeToMailingList();
         bool GetShowTermsAndConditions();
         string GetPrivacyUrl();
+        int GetShippingProductRecordId();
         string GetTermsAndConditionsUrl();
         WebShopSettingsRecord Settings { get; }
         IQueryable<ShippingProductRecord> ShippingProductRecords();

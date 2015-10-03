@@ -4,7 +4,7 @@
 @* @using Orchard.Core.Routable.Models *@
 @using Cascade.WebShop.Models
 @{
-    Style.Require("WebShop.Order");
+    Style.Require("Cascade.WebShop.Order");
  
     var order = (OrderRecord) Model.Order;
     var productParts = (IList<ProductPart>) Model.Products;
@@ -74,24 +74,27 @@
         <div class="invoice-address">
             <h2>Invoice Address</h2>
             <ul class="address-fields">
-                <li>@invoiceAddress.Name.Value</li>
-                <li>@invoiceAddress.Address.Value</li>
-                <li>@invoiceAddress.City.Value</li>
-                <li>@invoiceAddress.State.Value</li>
-                <li>@invoiceAddress.Postcode.Value</li>
-                <li>@invoiceAddress.Country.Value</li>
+                <li>@invoiceAddress.Name</li>
+                <li>@invoiceAddress.Address</li>
+                <li>@invoiceAddress.City</li>
+                <li>@invoiceAddress.State</li>
+                <li>@invoiceAddress.Postcode</li>
+                <li>@invoiceAddress.Country</li>
             </ul>
         </div>
+        @if(shippingAddress != null)
+        { 
         <div class="shipping-address">
             <h2>Shipping Address</h2>
             <ul class="address-fields">
-                <li>@shippingAddress.Name.Value</li>
-                <li>@shippingAddress.Address.Value</li>
-                <li>@shippingAddress.City.Value</li>
-                <li>@shippingAddress.State.Value</li>
-                <li>@shippingAddress.Postcode.Value</li>
-                <li>@shippingAddress.Country.Value</li>
+                <li>@shippingAddress.Name</li>
+                <li>@shippingAddress.Address</li>
+                <li>@shippingAddress.City</li>
+                <li>@shippingAddress.State</li>
+                <li>@shippingAddress.Postcode</li>
+                <li>@shippingAddress.Country</li>
             </ul>
         </div>
+        }
     </article>
 </div>
