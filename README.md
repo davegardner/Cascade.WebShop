@@ -9,3 +9,6 @@ Implements eCommerce functionality. Includes
 * implements a checkout procedure
 
 To collect payments, requires downloading a payment gateway such as Cascade.PayPal
+
+# IMPORTANT:
+Run this module under *https* (not http) to ensure protection against XSRS.
