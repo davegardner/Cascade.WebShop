@@ -1,14 +1,12 @@
 ﻿using Cascade.WebShop.Models;
 using Cascade.WebShop.Services;
 using Cascade.WebShop.ViewModels;
-using JetBrains.Annotations;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Drivers;
 using Orchard.Settings;
 
 namespace Cascade.WebShop.Drivers
 {
-    [UsedImplicitly]
     public class WebShopSettingsPartDriver : ContentPartDriver<WebShopSettingsPart>
     {
         //private readonly ISiteService _siteService;

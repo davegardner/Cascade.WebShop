@@ -2,56 +2,66 @@
 @model Cascade.WebShop.Models.ProductPart
 @{
     if (Model.Record.Id < 1 && Model.TypeDefinition.Name == "Artwork")
-    { 
+    {
         Model.IsShippable = true;
     }
 }
 <fieldset>
     <legend>Product Fields</legend>
- 
+
     <div class="editor-label">@Html.LabelFor(x => x.Sku)</div>
     <div class="editor-field">
         @Html.EditorFor(x => x.Sku)
         @Html.ValidationMessageFor(x => x.Sku)
     </div>
     <div class="hint">The unique Stock-Keeping Unit</div>
- 
+
     <div class="editor-label">@Html.LabelFor(x => x.UnitPrice)</div>
     <div class="editor-field">
         @Html.EditorFor(x => x.UnitPrice)
         @Html.ValidationMessageFor(x => x.UnitPrice)
     </div>
     <div class="hint">The sales price per unit including GST</div>
-    
-    <div class="editor-label">@Html.LabelFor(x => x.InStock)</div>
-    <div class="editor-field">
-        @Html.EditorFor(x => x.InStock)
-        @Html.ValidationMessageFor(x => x.InStock)
-    </div>
-    <div class="hint">Automatic tally of number of units currently in stock. Edit this only to set up the initial quantity and for stock corrections.</div>
-    
-    <div class="editor-label">@Html.LabelFor(x => x.NumberSold)</div>
-    <div class="editor-field">
-        @Html.EditorFor(x => x.NumberSold)
-        @Html.ValidationMessageFor(x => x.NumberSold)
-    </div>
-    <div class="hint">The number of units sold to date. Should not normally be edited as it is incremented by online sales.</div>
-    
-    <div class="editor-label">@T("Can reorder?" )</div>
-    <div class="editor-field">
-        @Html.CheckBoxFor(x => x.CanReorder)
-        <label for="@Html.FieldIdFor(m => m.CanReorder)" class="forcheckbox">@T("True if more of this item can be obtained (eg NOT generally true for original artworks)")
-            </label>
-    </div>
-    
-    <div class="editor-label">@Html.LabelFor(x => x.ReorderLevel)</div>
-    <div class="editor-field">
-        @Html.EditorFor(x => x.ReorderLevel)
-        @Html.ValidationMessageFor(x => x.ReorderLevel)
-    </div>
-    <div class="hint">Enter a suggested reorder level.</div>
 
-     <div class="editor-label">@T("Is Shippable?" )</div>
+    <div class="editor-label">@T("Use Stock Control?")</div>
+    <div class="editor-field">
+        @Html.CheckBoxFor(x => x.UseStockControl)
+        <div class="hint">If checked then this product cannot be ordered if it's out of stock.</div>
+    </div>
+
+    <div data-controllerid="@Html.FieldIdFor(m => m.UseStockControl)">
+
+        <div class="editor-label">@Html.LabelFor(x => x.InStock)</div>
+        <div class="editor-field">
+            @Html.EditorFor(x => x.InStock)
+            @Html.ValidationMessageFor(x => x.InStock)
+        </div>
+        <div class="hint">Automatic tally of number of units currently in stock. Edit this only to set up the initial quantity and for stock corrections.</div>
+
+        <div class="editor-label">@Html.LabelFor(x => x.NumberSold)</div>
+        <div class="editor-field">
+            @Html.EditorFor(x => x.NumberSold)
+            @Html.ValidationMessageFor(x => x.NumberSold)
+        </div>
+        <div class="hint">The number of units sold to date. Should not normally be edited as it is incremented by online sales.</div>
+
+        <div class="editor-label">@T("Can reorder?")</div>
+        <div class="editor-field">
+            @Html.CheckBoxFor(x => x.CanReorder)
+            <label for="@Html.FieldIdFor(m => m.CanReorder)" class="forcheckbox">
+                @T("True if more of this item can be obtained (eg NOT generally true for original artworks)")
+            </label>
+        </div>
+
+        <div class="editor-label">@Html.LabelFor(x => x.ReorderLevel)</div>
+        <div class="editor-field">
+            @Html.EditorFor(x => x.ReorderLevel)
+            @Html.ValidationMessageFor(x => x.ReorderLevel)
+        </div>
+        <div class="hint">Enter a suggested reorder level.</div>
+    </div>
+
+    <div class="editor-label">@T("Is Shippable?")</div>
     <div class="editor-field">
         @Html.CheckBoxFor(x => x.IsShippable)
         <div class="hint">True if this is a product such as an Artwork. Should be set false for Workshops and similar services. Determines if a shipping charge is included in shopping cart.</div>

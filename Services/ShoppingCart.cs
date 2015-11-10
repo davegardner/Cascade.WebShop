@@ -49,7 +49,7 @@ namespace Cascade.WebShop.Services
         {
             // only add if in stock: removed from stock when order processed (
             var product = GetProduct(productId);
-            if (product != null && product.InStock > 0)
+            if (!product.UseStockControl || (product != null  && product.InStock > 0))
             {
                 var item = Items.SingleOrDefault(x => x.ProductId == productId);
 
@@ -160,7 +160,8 @@ namespace Cascade.WebShop.Services
             foreach (var item in Items)
             {
                 var product = GetProduct(item.ProductId);
-                product.InStock -= item.Quantity;
+                if(product.UseStockControl)
+                    product.InStock -= item.Quantity;
                 product.NumberSold += item.Quantity;
             }
         }

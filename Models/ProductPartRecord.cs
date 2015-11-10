@@ -9,6 +9,7 @@ namespace Cascade.WebShop.Models
         public virtual string Sku { get; set; }
         public virtual int InStock { get; set; }
         public virtual int NumberSold  { get; set; }
+        public virtual bool UseStockControl { get; set; }
         public virtual bool CanReorder { get; set; }
         public virtual int ReorderLevel { get; set; }
         public virtual bool IsShippable { get; set; }
@@ -29,6 +30,12 @@ namespace Cascade.WebShop.Models
             set { Store(r=>r.Sku, value); }
         }
 
+        public bool UseStockControl
+        {
+            get { return Retrieve(r => r.UseStockControl); }
+            set { Store(r => r.UseStockControl, value); }
+        }
+        
         public int InStock 
         {
             get { return Retrieve(r=>r.InStock); }

@@ -27,6 +27,7 @@ namespace Cascade.WebShop.Drivers
                      Price: part.UnitPrice,
                      Sku: part.Sku,
                      InStock: part.InStock,
+                     UseStockControl: part.UseStockControl,
                      NumberSold: part.NumberSold,
                      CanReorder: part.CanReorder,
                      ReorderLevel: part.ReorderLevel

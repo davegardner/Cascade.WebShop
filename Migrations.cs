@@ -162,5 +162,12 @@ namespace Cascade.WebShop
 
             return 1;
         }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable("ProductRecord", t => t
+                .AddColumn<bool>("UseStockControl"));
+            return 2;
+        }
     }
 }
