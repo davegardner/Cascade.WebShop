@@ -68,7 +68,7 @@ namespace Cascade.WebShop.Services
 
         public int GetShippingProductRecordId()
         {
-            return Settings == null ? 0 : Settings.ShippingProductRecord.Id;
+            return Settings == null ? 0 : (Settings.ShippingProductRecord == null ? 0 : Settings.ShippingProductRecord.Id);
         }
 
         private string PrettyPath(string path)

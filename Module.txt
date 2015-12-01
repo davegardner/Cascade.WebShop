@@ -2,7 +2,7 @@
 AntiForgery: disabled
 Author: Dave Gardner
 Website: http://cascadepixels.com.au
-Version: 1.0.3
+Version: 1.0.4
 OrchardVersion: 1.9.1
 Category: Commerce
 Description: Orchard eCommerce module. MUST be run under https (to prevent XSRFs). Note that AntForgery must be off to enable the 'Add' Ajax button on the cart.
