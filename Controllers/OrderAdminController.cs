@@ -42,7 +42,7 @@ namespace Cascade.WebShop.Controllers
         public ActionResult Index(PagerParameters pagerParameters)
         {
             var pager = new Pager(_siteService.GetSiteSettings(), pagerParameters.Page, pagerParameters.PageSize);
-            var ordersQuery = _orderService.GetOrders().OrderByDescending(o=>o.CreatedAt);
+            var ordersQuery = _orderService.GetOrders().List().OrderByDescending(o => o.CreatedAt);
             var orders = ordersQuery.Skip(pager.GetStartIndex()).Take(pager.PageSize);
             var pagerShape = Shape.Pager(pager).TotalItemCount(ordersQuery.Count());
             var model = Shape.Orders(Orders: orders.ToArray(), Pager: pagerShape);
@@ -77,7 +77,7 @@ namespace Cascade.WebShop.Controllers
             return View((object)model);
         }
 
-        private dynamic BuildModel(OrderRecord order, EditOrderVM editModel)
+        private dynamic BuildModel(OrderRecordPart order, EditOrderVM editModel)
         {
             CustomerPart customer = _customerService.GetCustomer(order.CustomerId);
             AddressPart shipAddressPart = _customerService.GetShippingAddress(customer.Id);
@@ -105,15 +105,16 @@ namespace Cascade.WebShop.Controllers
                 ShippingAddress1: shipAddress,
                 ShippingAddress2: shipAddress2,
                 ShippingCountry : shipCountry,
-                Details: order.Details.Select( detail =>
-                    Shape.Detail
-                    (
-                        Sku: detail.Sku,
-                        Price: detail.UnitPrice,
-                        Quantity: detail.Quantity,
-                        Total: detail.Total,
-                        Description: detail.Description
-                    )).ToArray(),
+                Details: null, // Convert the whole thing to use Part instead of Record
+                //Details: order.Details.Select( detail =>
+                //    Shape.Detail
+                //    (
+                //        Sku: detail.Sku,
+                //        Price: detail.UnitPrice,
+                //        Quantity: detail.Quantity,
+                //        Total: detail.Total,
+                //        Description: detail.Description
+                //    )).ToArray(),
                 EditModel: editModel
             );
         }

@@ -55,7 +55,9 @@ namespace Cascade.WebShop.Services
 
         public AddressPart GetAddress(int customerId, string addressType)
         {
-            return _orchardServices.ContentManager.Query<AddressPart, AddressRecord>().Where(x => x.CustomerId == customerId && x.Type == addressType).List().FirstOrDefault();
+            return _orchardServices.ContentManager.Query<AddressPart, AddressRecord>()
+                .Where(x => x.CustomerId == customerId && x.Type == addressType)
+                .List().FirstOrDefault();
         }
 
         public AddressPart GetAddress(int id)
@@ -67,7 +69,8 @@ namespace Cascade.WebShop.Services
 
         public IEnumerable<AddressPart> GetAddresses(int id)
         {
-            return _orchardServices.ContentManager.Query<AddressPart, AddressRecord>().Where(x=>x.CustomerId == id).List();
+            return _orchardServices.ContentManager.Query<AddressPart, AddressRecord>()
+                .Where(x=>x.CustomerId == id).List();
         }
         
         public AddressPart CreateAddress(int customerId, string addressType)

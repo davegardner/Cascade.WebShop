@@ -116,7 +116,7 @@ namespace Cascade.WebShop.Controllers
 
         public ActionResult ListOrders(int id)
         {
-            var orders = _orderService.GetOrders(id).OrderByDescending(o=>o.CreatedAt).ToArray();
+            var orders = _orderService.GetOrders(id).List().OrderByDescending(o=>o.CreatedAt).ToArray();
             return View(orders);
         }
 

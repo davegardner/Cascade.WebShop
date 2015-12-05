@@ -467,28 +467,32 @@
     <Compile Include="Controllers\SimulatedPaymentServiceProviderController.cs" />
     <Compile Include="Drivers\AddressPartDriver.cs" />
     <Compile Include="Drivers\CustomerPartDriver.cs" />
+    <Compile Include="Drivers\OrderRecordPartDriver.cs" />
     <Compile Include="Drivers\ProductPartDriver.cs" />
     <Compile Include="Drivers\ShippingProductDriver.cs" />
     <Compile Include="Drivers\ShoppingCartWidgetPartDriver.cs" />
     <Compile Include="Drivers\WebShopSettingsPartDriver.cs" />
+    <Compile Include="Handlers\AddressPartHandler.cs" />
+    <Compile Include="Handlers\OrderPartHandler.cs" />
     <Compile Include="Handlers\ShippingProductHandler.cs" />
     <Compile Include="Extensibility\IPaymentServiceProvider.cs" />
-    <Compile Include="Extensibility\PaymentRequestEventArgs.cs" />
+    <Compile Include="Extensibility\PaymentRequest.cs" />
     <Compile Include="Extensibility\PaymentResponse.cs" />
     <Compile Include="Extensibility\PaymentResponseStatus.cs" />
     <Compile Include="Extensibility\PaymentResult.cs" />
     <Compile Include="Filters\ProductPartFilter.cs" />
-    <Compile Include="Handlers\AddressPartHandler.cs" />
     <Compile Include="Handlers\CustomerPartHandler.cs" />
     <Compile Include="Handlers\EmailHandler.cs" />
     <Compile Include="Handlers\ProductPartHandler.cs" />
     <Compile Include="Handlers\WebShopSettingsPartHandler.cs" />
+    <Compile Include="Helpers\OrderDetailSerializer.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Migrations.cs" />
     <Compile Include="Models\AddressPart.cs" />
     <Compile Include="Models\CustomerPart.cs" />
-    <Compile Include="Models\OrderDetailRecord.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\OrderRecord.cs" />
+    <Compile Include="Models\OrderRecordPart.cs" />
     <Compile Include="Models\OrderStatus.cs" />
     <Compile Include="Models\ShippingProduct.cs" />
     <Compile Include="Models\TransactionRecord.cs" />
@@ -501,7 +505,6 @@
     <Compile Include="Helpers\CountryCode.cs" />
     <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\ICustomerService.cs" />
-    <Compile Include="Services\IOrderService.cs" />
     <Compile Include="Services\IShoppingCart.cs" />
     <Compile Include="Services\IWebshopSettingsService.cs" />
     <Compile Include="Services\MissingSettingsBanner.cs" />
@@ -528,6 +531,7 @@
     <Content Include="Views\OrderAdmin\Index.cshtml" />
     <Content Include="Views\OrderAdmin\History.cshtml" />
     <Content Include="Views\Parts\ShippingProduct.cshtml" />
+    <Content Include="Views\Parts\OrderRecord.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\EditorTemplates\Parts\Product.cshtml" />

@@ -1,6 +1,7 @@
 ﻿using Orchard.ContentManagement.MetaData;
 using Orchard.Core.Contents.Extensions;
 using Orchard.Data.Migration;
+using Orchard.Environment.Extensions;
 using System;
 using System.Data;
 
@@ -75,7 +76,7 @@ namespace Cascade.WebShop
                 );
 
             SchemaBuilder.CreateTable("OrderRecord", t => t
-                .Column<int>("Id", c => c.PrimaryKey().Identity())
+                .ContentPartRecord()
                 .Column<int>("CustomerId", c => c.NotNull())
                 .Column<DateTime>("CreatedAt", c => c.NotNull())
                 .Column<decimal>("SubTotal", c => c.NotNull())
@@ -91,7 +92,7 @@ namespace Cascade.WebShop
                 );
 
             SchemaBuilder.CreateTable("OrderDetailRecord", t => t
-                .Column<int>("Id", c => c.PrimaryKey().Identity())
+                .ContentPartRecord()
                 .Column<int>("OrderRecord_Id", c => c.NotNull())
                 .Column<int>("ProductPartRecord_Id", c => c.NotNull())
                 .Column<int>("Quantity", c => c.NotNull())
@@ -103,7 +104,7 @@ namespace Cascade.WebShop
                 .Column<Decimal>("Total", c => c.Nullable())
                 .Column<string>("Sku")
                 .Column<string>("Description")
-);
+            );
 
 
             SchemaBuilder.CreateTable("WebShopSettingsRecord", table => table
@@ -169,5 +170,107 @@ namespace Cascade.WebShop
                 .AddColumn<bool>("UseStockControl"));
             return 2;
         }
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.DropTable("OrderRecord");
+
+            SchemaBuilder.CreateTable("OrderRecord", table => table
+                .ContentPartRecord()
+                .Column<int>("CustomerId", c => c.NotNull())
+                .Column<DateTime>("CreatedAt", c => c.Nullable())
+                .Column<decimal>("SubTotal", c => c.NotNull())
+                .Column<decimal>("GST", c => c.NotNull())
+                .Column<string>("Status", c => c.WithLength(50).NotNull())
+                .Column<string>("PaymentServiceProviderResponse", c => c.WithLength(null))
+                .Column<string>("PaymentReference", c => c.WithLength(50))
+                .Column<DateTime>("PaidAt", c => c.Nullable())
+                .Column<DateTime>("CompletedAt", c => c.Nullable())
+                .Column<DateTime>("CancelledAt", c => c.Nullable())
+                .Column<decimal>("Total", c => c.Nullable())
+                .Column<string>("Number", c => c.Nullable())
+                .Column<string>("RawDetails", c => c.Unlimited())
+                );
+            //return 3;
+
+            ContentDefinitionManager.AlterPartDefinition("OrderRecordPart", part => part
+                .Attachable(false)
+            );
+
+            ContentDefinitionManager.AlterTypeDefinition("Order", builder => builder
+                .WithPart("OrderRecordPart")
+            );
+            //return 5;
+
+            //// this change has also been made in UpdateFrom2()
+            //SchemaBuilder.AlterTable("OrderRecord", table =>
+            //{
+            //    table.DropColumn("CreatedAt");
+            //    table.AddColumn<DateTime>("CreatedAt", c => c.Nullable());
+            //});
+            //return 6;
+
+            SchemaBuilder.DropTable("OrderDetailRecord");
+            //SchemaBuilder.DropTable("OrderRecord");
+
+            //            SchemaBuilder.CreateTable("OrderDetailRecord", t => t
+            //                .ContentPartRecord()
+            //                .Column<int>("OrderRecord_Id", c => c.NotNull())
+            //                .Column<int>("ProductPartRecord_Id", c => c.NotNull())
+            //                .Column<int>("Quantity", c => c.NotNull())
+            //                .Column<decimal>("UnitPrice", c => c.NotNull())
+            //                .Column<decimal>("GSTRate", c => c.NotNull())
+            //                .Column<Decimal>("UnitGST", c => c.Nullable())
+            //                .Column<Decimal>("GST", c => c.Nullable())
+            //                .Column<Decimal>("SubTotal", c => c.Nullable())
+            //                .Column<Decimal>("Total", c => c.Nullable())
+            //                .Column<string>("Sku")
+            //                .Column<string>("Description")
+            //);
+
+            //SchemaBuilder.CreateTable("OrderRecord", t => t
+            //    .Column<int>("CustomerId", c => c.NotNull())
+            //    .Column<DateTime>("CreatedAt", c => c.NotNull())
+            //    .Column<decimal>("SubTotal", c => c.NotNull())
+            //    .Column<decimal>("GST", c => c.NotNull())
+            //    .Column<string>("Status", c => c.WithLength(50).NotNull())
+            //    .Column<string>("PaymentServiceProviderResponse", c => c.WithLength(null))
+            //    .Column<string>("PaymentReference", c => c.WithLength(50))
+            //    .Column<DateTime>("PaidAt", c => c.Nullable())
+            //    .Column<DateTime>("CompletedAt", c => c.Nullable())
+            //    .Column<DateTime>("CancelledAt", c => c.Nullable())
+            //    .Column<decimal>("Total", c => c.Nullable())
+            //    .Column<string>("Number", c => c.Nullable())
+            //    );
+            //return 7;
+
+            return 3;
+        }
     }
+
+    //[OrchardFeature("Booking", FeatureName = "Cascade.WebShop.Feature1")]
+    //public class MyFeatureMigrations : DataMigrationImpl
+    //{
+    //    public int Create()
+    //    {
+    //        SchemaBuilder.CreateTable("Booking", table => table
+    //            .ContentPartRecord()
+    //            .Column<string>("PreferredDay")
+    //            .Column<string>("PreferredTime")
+    //            .Column<string>("Notes")
+    //            .Column<string>("Name")
+    //            .Column<string>("Address")
+    //            .Column<string>("City")
+    //            .Column<string>("State")
+    //            .Column<string>("Postcode")
+    //            .Column<string>("CountryCode", c => c.WithLength(2))
+    //        );
+
+    //        ContentDefinitionManager.AlterTypeDefinition("Boo")
+    //        ContentDefinitionManager.AlterPartDefinition("BookingPart", builder => builder
+    //            .Attachable(false)
+    //            );
+
+    //        return 1;
+    //    }
+    //}
 }

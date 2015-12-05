@@ -6,33 +6,57 @@ using Orchard.Data;
 using Cascade.WebShop.Models;
 using Cascade.WebShop.Extensibility;
 using Orchard.Settings;
+using Orchard.Services;
+using Orchard;
 
 namespace Cascade.WebShop.Services
 {
+    public interface IOrderService : IDependency
+    {
+        /// <summary>
+        /// Creates a new order based on the specified ShoppingCartItems
+        /// </summary>
+        OrderRecordPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items);
+
+        /// <summary>
+        /// Gets a list of ProductParts from the specified list of OrderDetails. 
+        /// Useful if you need to use the product as a ProductPart 
+        /// (instead of just having access to the ProductRecord instance).
+        /// </summary>
+        IEnumerable<ProductPart> GetProducts(IEnumerable<OrderDetail> orderDetails);
+
+        OrderRecordPart GetOrderByNumber(string orderNumber);
+        OrderRecordPart GetOrder(int id);
+
+        IContentQuery<OrderRecordPart> GetOrders(int customerId);
+        IContentQuery<OrderRecordPart> GetOrders();
+
+        void UpdateOrderStatus(OrderRecordPart order, PaymentResponse paymentResponse);
+
+    }
+    
     public class OrderService : IOrderService
     {
-        //private readonly IDateTimeService _dateTimeService;
         private readonly IRepository<ProductRecord> _productRepository;
         private readonly IContentManager _contentManager;
         private readonly IRepository<OrderRecord> _orderRepository;
-        private readonly IRepository<OrderDetailRecord> _orderDetailRepository;
         private readonly IRepository<CustomerRecord> _customerRepository;
         private readonly ISiteService _siteService;
         private readonly WebShopSettingsPart _webShopSettings;
+        private readonly IClock _clock;
 
-        public OrderService(/*IDateTimeService dateTimeService,*/ IRepository<ProductRecord> productRepository, IContentManager contentManager, IRepository<OrderRecord> orderRepository, IRepository<OrderDetailRecord> orderDetailRepository, IRepository<CustomerRecord> customerRepository, ISiteService siteService)
+        public OrderService(IRepository<ProductRecord> productRepository, IContentManager contentManager, IRepository<OrderRecord> orderRepository,  IRepository<CustomerRecord> customerRepository, ISiteService siteService, IClock clock)
         {
-            //_dateTimeService = dateTimeService;
             _productRepository = productRepository;
             _contentManager = contentManager;
             _orderRepository = orderRepository;
-            _orderDetailRepository = orderDetailRepository;
             _customerRepository = customerRepository;
             _siteService = siteService;
             _webShopSettings = _siteService.GetSiteSettings().As<WebShopSettingsPart>();
+            _clock = clock;
         }
 
-        public OrderRecord CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items)
+        public OrderRecordPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items)
         {
 
             if (items == null)
@@ -44,40 +68,11 @@ namespace Cascade.WebShop.Services
             if (!itemsArray.Any())
                 throw new ArgumentException("Creating an order with 0 items is not supported", "items");
 
-            var order = new OrderRecord
-            {
-                //CreatedAt = _dateTimeService.Now,
-                CreatedAt = DateTime.Now,
-                CustomerId = customerId,
-                Status = OrderStatus.New
-            };
-
-            _orderRepository.Create(order);
-
-            // add the shipping charges (if any)
-            //var shippingProductPart = _contentManager.Get<ShippingProductPart>(_webShopSettings.ShippingProductRecord.Id);
-            //if (shippingProductPart != null)
-            //{
-            //    var shippingProduct = shippingProductPart.As<ProductPart>();
-            //    if (shippingProductPart != null)
-            //    {
-            //        var detail = new OrderDetailRecord
-            //        {
-            //            OrderRecord_Id = order.Id,
-            //            ProductPartRecord_Id = shippingProduct.Record.Id,
-            //            Quantity = 1,
-            //            UnitPrice = shippingProduct.UnitPrice,
-            //            GSTRate = .1m
-            //        };
-            //        _orderDetailRepository.Create(detail);
-            //        order.Details.Add(detail);
-            //    }
-            //}
-
-            // Get all products in one shot, so we can add the product reference to each order detail
-            //var productIds = itemsArray.Select(x => x.ProductId).ToArray();
-            //var products = _productRepository.Fetch(x => productIds.Contains(x.Id)).ToArray();
-
+            var orderPart = _contentManager.Create<OrderRecordPart>("Order");
+            orderPart.CreatedAt = _clock.UtcNow.ToLocalTime();
+            orderPart.CustomerId = customerId;
+            orderPart.Status = OrderStatus.New;
+        
             // Create an order detail for each item
             foreach (var item in itemsArray)
             {
@@ -89,15 +84,15 @@ namespace Cascade.WebShop.Services
                 var description = _contentManager.GetItemMetadata(product).DisplayText;
                 if (product.ContentItem.Parts.Any(p => p.TypeDefinition.Name == "Artwork"))
                 {
-                    dynamic part = product ;
+                    dynamic part = product;
                     description += " (" + part.ArtworkPart.ArtistRecord.Name + ")";
                 }
                 else
                     description += " (" + product.ContentItem.TypeDefinition.Name + ")";
 
-                var detail = new OrderDetailRecord
+                var detail = new OrderDetail
                 {
-                    OrderRecord_Id = order.Id,
+                    OrderRecord_Id = orderPart.Id,
                     ProductPartRecord_Id = product.Id,
                     Quantity = item.Quantity,
                     UnitPrice = product.UnitPrice,
@@ -106,46 +101,72 @@ namespace Cascade.WebShop.Services
                     Description = description
                 };
 
-                _orderDetailRepository.Create(detail);
-                order.Details.Add(detail);
+                orderPart.Details.Add(detail);
+
+                //var detail = _contentManager.Create<OrderDetailPart>("OrderDetail");
+
+                //var detail = new OrderDetailRecord
+                //{
+                //    OrderRecord_Id = orderPart.Id,
+                //    ProductPartRecord_Id = product.Id,
+                //    Quantity = item.Quantity,
+                //    UnitPrice = product.UnitPrice,
+                //    GSTRate = .1m,
+                //    Sku = product.Sku,
+                //    Description = description
+                //};
+
+                //_orderDetailRepository.Create(detail);
+
+                //// Do we need to do this??
+                //orderPart.Details.Add(detail);
             }
 
-            order.UpdateTotals();
+            // TODO: ?? Refresh the OrderRecord so we can see the Detail records ??
 
-            return order;
+            orderPart.UpdateTotals();
+
+            return orderPart;
         }
 
         /// <summary>
         /// Gets a list of ProductParts from the specified list of OrderDetails. Useful if you need to use the product as a ProductPart (instead of just having access to the ProductRecord instance).
         /// </summary>
-        public IEnumerable<ProductPart> GetProducts(IEnumerable<OrderDetailRecord> orderDetails)
+        public IEnumerable<ProductPart> GetProducts(IEnumerable<OrderDetail> orderDetails)
         {
             var productIds = orderDetails.Select(x => x.ProductPartRecord_Id).ToArray();
             return _contentManager.GetMany<ProductPart>(productIds, VersionOptions.Latest, QueryHints.Empty);
         }
 
-        public OrderRecord GetOrderByNumber(string orderNumber)
+        public OrderRecordPart GetOrderByNumber(string orderNumber)
         {
             var orderId = int.Parse(orderNumber) - 1000;
-            return _orderRepository.Get(orderId);
+            return _contentManager.Get<OrderRecordPart>(orderId);
         }
 
-        public OrderRecord GetOrder(int id)
+        public OrderRecordPart GetOrder(int id)
         {
-            return _orderRepository.Get(id);
+            return _contentManager.Get<OrderRecordPart>(id);
         }
 
-        public IQueryable<OrderRecord> GetOrders(int customerId)
+        public IContentQuery<OrderRecordPart> GetOrders(int customerId)
         {
-            return _orderRepository.Table.Where(r => r.CustomerId == customerId);
-        }
-        
-        public IQueryable<OrderRecord> GetOrders()
-        {
-            return _orderRepository.Table;
+            return _contentManager.Query<OrderRecordPart, OrderRecord>().Where(o => o.CustomerId == customerId);
+            //return _orderRepository.Table.Where(r => r.CustomerId == customerId);
         }
 
-        public void UpdateOrderStatus(OrderRecord order, PaymentResponse paymentResponse)
+        public IContentQuery<OrderRecordPart> GetOrders()
+        {
+            return _contentManager.Query<OrderRecordPart, OrderRecord>();
+            //return _orderRepository.Table.Where(r => r.CustomerId == customerId);
+        }
+
+        //public IQueryable<OrderRecord> GetOrders()
+        //{
+        //    return _orderRepository.Table;
+        //}
+
+        public void UpdateOrderStatus(OrderRecordPart order, PaymentResponse paymentResponse)
         {
             OrderStatus orderStatus;
 

@@ -2,10 +2,10 @@
 AntiForgery: disabled
 Author: Dave Gardner
 Website: http://cascadepixels.com.au
-Version: 1.0.4
-OrchardVersion: 1.9.1
+Version: 1.1.0
+OrchardVersion: 1.9.2
 Category: Commerce
-Description: Orchard eCommerce module. MUST be run under https (to prevent XSRFs). Note that AntForgery must be off to enable the 'Add' Ajax button on the cart.
+Description: Orchard eCommerce module. MUST be run under https (to prevent XSRFs). Note that AntForgery must be off to enable the 'Add' Ajax button on the cart. Note also that version 1.1.0 is NOT COMPATIBLE with earlier versions because OrderRecord has been converted from a simple type to a ContentPartRecord. Consequently, the old OrderRecord table will be dropped and recreated, so you will lose all existing OrderRecords.
 Dependencies: Orchard.Projections, Orchard.Forms, Orchard.jQuery, AIM.LinqJs.jQuery, Orchard.Users, Orchard.Email
 Features:
     Cascade.WebShop.SimulatedPSP:
