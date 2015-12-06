@@ -20,6 +20,11 @@
         /// <summary>
         /// The order was cancelled
         /// </summary>
-        Cancelled
+        Cancelled,
+
+        /// <summary>
+        /// The order is yet to be filled in. When properly filled in the status becomes 'New'
+        /// </summary>
+        Invalid
     }
 }

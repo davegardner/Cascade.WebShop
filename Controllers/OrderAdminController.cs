@@ -80,8 +80,8 @@ namespace Cascade.WebShop.Controllers
         private dynamic BuildModel(OrderRecordPart order, EditOrderVM editModel)
         {
             CustomerPart customer = _customerService.GetCustomer(order.CustomerId);
-            AddressPart shipAddressPart = _customerService.GetShippingAddress(customer.Id);
-            AddressPart custAddressPart = _customerService.GetAddress(customer.Id, "InvoiceAddress");
+            AddressPart shipAddressPart = _customerService.GetShippingAddress(customer.Id, order.Id);
+            AddressPart custAddressPart = _customerService.GetInvoiceAddress(customer.Id);
 
             string shipName = string.Empty;
             if (!string.IsNullOrWhiteSpace(shipAddressPart.Name))

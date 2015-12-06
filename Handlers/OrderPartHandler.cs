@@ -17,7 +17,6 @@ namespace Cascade.WebShop.Handlers
                 if (part == null)
                     return;
 
-                // Deserialize Elements
                 part.Details = OrderDetailSerializer.Deserialize(part.RawDetails);
 
             });
@@ -27,7 +26,6 @@ namespace Cascade.WebShop.Handlers
                 if (part == null)
                     return;
 
-                // Serialize Elements
                 part.RawDetails = OrderDetailSerializer.Serialize(part.Details);
             });
         }

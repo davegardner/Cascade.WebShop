@@ -9,6 +9,37 @@ using System.Collections.Generic;
 
 namespace Cascade.WebShop.Services
 {
+    public interface ICustomerService : IDependency
+    {
+        CustomerPart CreateCustomer(string email, string password);
+        //AddressPart GetAddress(int customerId, string addressType);
+        IEnumerable<AddressPart> GetAddresses(int id);
+        AddressPart GetAddress(int id);
+        AddressPart CreateAddress(int customerId, string addressType, int orderId);
+        IContentQuery<CustomerPart> GetCustomers();
+        CustomerPart GetCustomer(int id);
+        /// <summary>
+        /// Retrieve the most recent Invoice address for this customer
+        /// </summary>
+        /// <param name="customerId">Customer Id</param>
+        /// <returns>AddressPart</returns>
+        AddressPart GetInvoiceAddress(int customerId);
+        /// <summary>
+        /// Get the only shipping address for the specified customer and order
+        /// </summary>
+        /// <param name="customerId">Customer Id</param>
+        /// <param name="orderId">Order Id</param>
+        /// <returns>AddressPart</returns>
+        AddressPart GetShippingAddress(int customerId, int orderId);
+        /// <summary>
+        /// Retrieves the most recently used shipping address for this customer, as a decent default value
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        AddressPart GetLastShippingAddress(int customerId);
+
+    }
+
     public class CustomerService : ICustomerService
     {
         private readonly IOrchardServices _orchardServices;
@@ -53,13 +84,6 @@ namespace Cascade.WebShop.Services
             return customerPart;
         }
 
-        public AddressPart GetAddress(int customerId, string addressType)
-        {
-            return _orchardServices.ContentManager.Query<AddressPart, AddressRecord>()
-                .Where(x => x.CustomerId == customerId && x.Type == addressType)
-                .List().FirstOrDefault();
-        }
-
         public AddressPart GetAddress(int id)
         {
             var address = _orchardServices.ContentManager.Get<AddressPart>(id);
@@ -67,18 +91,21 @@ namespace Cascade.WebShop.Services
         }
 
 
-        public IEnumerable<AddressPart> GetAddresses(int id)
+        public IEnumerable<AddressPart> GetAddresses(int customerId)
         {
             return _orchardServices.ContentManager.Query<AddressPart, AddressRecord>()
-                .Where(x=>x.CustomerId == id).List();
+                .Where(x => x.CustomerId == customerId)
+                .OrderByDescending(a => a.Id)
+                .List();
         }
-        
-        public AddressPart CreateAddress(int customerId, string addressType)
+
+        public AddressPart CreateAddress(int customerId, string addressType, int orderId)
         {
             return _orchardServices.ContentManager.Create<AddressPart>("Address", x =>
             {
                 x.Type = addressType;
                 x.CustomerId = customerId;
+                x.OrderId = orderId;
             });
         }
 
@@ -92,17 +119,19 @@ namespace Cascade.WebShop.Services
             return _orchardServices.ContentManager.Query<CustomerPart, CustomerRecord>();
         }
 
-        public AddressPart GetShippingAddress(int id)
+        public AddressPart GetShippingAddress(int customerId, int orderId)
         {
-            var addresses = GetAddresses(id);
-            if (addresses != null && addresses.Count() > 0)
-            {
-                // return shipping address with largest id (ie: most recent)
-                return addresses.OrderByDescending(a => a.Type + a.Id.ToString("000000")).First();
-            }
-         
-            return null;
+            return GetAddresses(customerId).First(a => a.OrderId == orderId);
         }
 
+        public AddressPart GetInvoiceAddress(int customerId)
+        {
+            return GetAddresses(customerId).First(a => a.Type == "InvoiceAddress");
+        }
+
+        public AddressPart GetLastShippingAddress(int customerId)
+        {
+            return GetAddresses(customerId).FirstOrDefault(a => a.Type == "ShippingAddress");
+        }
     }
 }

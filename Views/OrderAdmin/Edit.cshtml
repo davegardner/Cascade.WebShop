@@ -2,8 +2,9 @@
 @using Cascade.WebShop.ViewModels
 @{
     var editModel = (EditOrderVM)Model.EditModel;
-    var order = (OrderRecord)Model.Order;
-    var details = (IList<dynamic>)Model.Details;
+    var order = (OrderRecordPart)Model.Order;
+    //var details = (IList<dynamic>)Model.Details;
+    var details = order.Details;
     var quantity = 0;
     var customerName = (string)Model.CustomerName;
     var customerAddress1 = (string)Model.CustomerAddress1;
@@ -98,13 +99,13 @@
         @foreach (var detail in details)
         {
             quantity += detail.Quantity;
-            decimal subtotal = detail.Quantity * detail.Price;
+            decimal subtotal = detail.Quantity * detail.UnitPrice;
             <tr>
                 <td>@detail.Sku
                 </td>
                 <td>@detail.Description
                 </td>
-                <td>@detail.Price.ToString("c")
+                <td>@detail.UnitPrice.ToString("c")
                 </td>
                 <td>@detail.Quantity
                 </td>

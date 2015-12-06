@@ -1,13 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Cascade.WebShop.Helpers;
 using Orchard.ContentManagement;
+using Orchard.ContentManagement.Records;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
-using Orchard.Core.Common.Utilities;
+using System.Linq;
 
 namespace Cascade.WebShop.Models
 {
+    // RECORD
+    public class OrderRecord : ContentPartRecord
+    {
+        public virtual int CustomerId { get; set; }
+        public virtual DateTime? CreatedAt { get; set; }
+        public virtual decimal SubTotal { get; set; }
+        public virtual decimal GST { get; set; }
+        public virtual OrderStatus Status { get; set; }
+        public virtual string PaymentServiceProviderResponse { get; set; }
+        public virtual string PaymentReference { get; set; }
+        public virtual DateTime? PaidAt { get; set; }
+        public virtual DateTime? CompletedAt { get; set; }
+        public virtual DateTime? CancelledAt { get; set; }
+        public virtual string RawDetails { get; set; }
+
+    }
+
+    // PART
     public class OrderRecordPart: ContentPart<OrderRecord>
     {
         public OrderRecordPart()
@@ -26,16 +44,7 @@ namespace Cascade.WebShop.Models
         public DateTime? CompletedAt { get { return Retrieve(r => r.CompletedAt); } set { Store(r => r.CompletedAt, value); } }
         public DateTime? CancelledAt { get { return Retrieve(r => r.CancelledAt); } set { Store(r => r.CancelledAt, value); } }
 
-        //private readonly LazyField<IList<OrderDetailPart>> _details = new LazyField<IList<OrderDetailPart>>();
-
-        //public LazyField<IList<OrderDetailPart>> DetailsField
-        //{
-        //    get { return _details; }
-        //}
-
-        //public IList<OrderDetailPart> Details { get { return DetailsField.Value; } }
-
-
+      
         public IList<OrderDetail> Details
         {
             get;
@@ -63,7 +72,9 @@ namespace Cascade.WebShop.Models
 
         public  void UpdateTotals()
         {
-            //Record.UpdateTotals();
+            SubTotal = Details.Sum(d => d.SubTotal);
+            GST = Details.Sum(d => d.UnitGST * d.UnitPrice);
+            RawDetails = OrderDetailSerializer.Serialize(Details);
         }
     }
 }

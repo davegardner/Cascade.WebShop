@@ -41,7 +41,7 @@ namespace Cascade.WebShop.Controllers
 
             T = NullLocalizer.Instance;
         }
-
+        
         [Themed]
         public ActionResult SignupOrLogin()
         {
@@ -156,8 +156,8 @@ namespace Cascade.WebShop.Controllers
                 return RedirectToAction("SignupOrLogin");
             }
 
-            var invoiceAddress = _customerService.GetAddress(customer.Id, "InvoiceAddress");
-            var shippingAddress = _customerService.GetAddress(customer.Id, "ShippingAddress");
+            var invoiceAddress = _customerService.GetInvoiceAddress(customer.Id);
+            var shippingAddress = _customerService.GetLastShippingAddress(customer.Id);
 
             var addressesViewModel = new AddressesViewModel
             {
@@ -238,7 +238,18 @@ namespace Cascade.WebShop.Controllers
 
         private AddressPart MapAddress(AddressViewModel source, string addressType, CustomerPart customerPart)
         {
-            var addressPart = _customerService.GetAddress(customerPart.Id, addressType) ?? _customerService.CreateAddress(customerPart.Id, addressType);
+            // Allow for many different Shipping Addresses: one for each order
+            AddressPart addressPart;
+            if (addressType == "InvoiceAddress")
+            {
+                addressPart = _customerService.GetInvoiceAddress(customerPart.Id);
+                if (addressPart == null)
+                    addressPart = _customerService.CreateAddress(customerPart.Id, addressType, 0);
+            }
+            else
+            {
+                addressPart = _customerService.CreateAddress(customerPart.Id, addressType, 0);
+            }
 
             addressPart.Name = source.Name.TrimSafe();
             addressPart.Address = source.Address.TrimSafe();
@@ -258,8 +269,8 @@ namespace Cascade.WebShop.Controllers
             if (user == null)
                 throw new OrchardSecurityException(T("Login required"));
 
-            dynamic invoiceAddress = _customerService.GetAddress(user.Id, "InvoiceAddress");
-            dynamic shippingAddress = _customerService.GetAddress(user.Id, "ShippingAddress");
+            dynamic invoiceAddress = _customerService.GetInvoiceAddress(user.Id);
+            dynamic shippingAddress = _customerService.GetLastShippingAddress(user.Id);
             dynamic shoppingCartShape = _services.New.ShoppingCart();
 
             var query = _shoppingCart.GetProducts().Select(x => _services.New.ShoppingCartItem(

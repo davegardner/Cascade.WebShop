@@ -190,7 +190,6 @@ namespace Cascade.WebShop
                 .Column<string>("Number", c => c.Nullable())
                 .Column<string>("RawDetails", c => c.Unlimited())
                 );
-            //return 3;
 
             ContentDefinitionManager.AlterPartDefinition("OrderRecordPart", part => part
                 .Attachable(false)
@@ -199,51 +198,18 @@ namespace Cascade.WebShop
             ContentDefinitionManager.AlterTypeDefinition("Order", builder => builder
                 .WithPart("OrderRecordPart")
             );
-            //return 5;
-
-            //// this change has also been made in UpdateFrom2()
-            //SchemaBuilder.AlterTable("OrderRecord", table =>
-            //{
-            //    table.DropColumn("CreatedAt");
-            //    table.AddColumn<DateTime>("CreatedAt", c => c.Nullable());
-            //});
-            //return 6;
 
             SchemaBuilder.DropTable("OrderDetailRecord");
-            //SchemaBuilder.DropTable("OrderRecord");
-
-            //            SchemaBuilder.CreateTable("OrderDetailRecord", t => t
-            //                .ContentPartRecord()
-            //                .Column<int>("OrderRecord_Id", c => c.NotNull())
-            //                .Column<int>("ProductPartRecord_Id", c => c.NotNull())
-            //                .Column<int>("Quantity", c => c.NotNull())
-            //                .Column<decimal>("UnitPrice", c => c.NotNull())
-            //                .Column<decimal>("GSTRate", c => c.NotNull())
-            //                .Column<Decimal>("UnitGST", c => c.Nullable())
-            //                .Column<Decimal>("GST", c => c.Nullable())
-            //                .Column<Decimal>("SubTotal", c => c.Nullable())
-            //                .Column<Decimal>("Total", c => c.Nullable())
-            //                .Column<string>("Sku")
-            //                .Column<string>("Description")
-            //);
-
-            //SchemaBuilder.CreateTable("OrderRecord", t => t
-            //    .Column<int>("CustomerId", c => c.NotNull())
-            //    .Column<DateTime>("CreatedAt", c => c.NotNull())
-            //    .Column<decimal>("SubTotal", c => c.NotNull())
-            //    .Column<decimal>("GST", c => c.NotNull())
-            //    .Column<string>("Status", c => c.WithLength(50).NotNull())
-            //    .Column<string>("PaymentServiceProviderResponse", c => c.WithLength(null))
-            //    .Column<string>("PaymentReference", c => c.WithLength(50))
-            //    .Column<DateTime>("PaidAt", c => c.Nullable())
-            //    .Column<DateTime>("CompletedAt", c => c.Nullable())
-            //    .Column<DateTime>("CancelledAt", c => c.Nullable())
-            //    .Column<decimal>("Total", c => c.Nullable())
-            //    .Column<string>("Number", c => c.Nullable())
-            //    );
-            //return 7;
 
             return 3;
+        }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterTable("AddressRecord", table => table
+                .AddColumn<int>("OrderId")
+           );
+            return 4;
         }
     }
 

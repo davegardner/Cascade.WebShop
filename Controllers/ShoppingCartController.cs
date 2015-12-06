@@ -15,12 +15,14 @@ namespace Cascade.WebShop.Controllers
         private readonly IShoppingCart _shoppingCart;
         private readonly IOrchardServices _services;
         private readonly IWebshopSettingsService _webshopSettings;
+        private readonly IOrderService _orderService;
 
-        public ShoppingCartController(IShoppingCart shoppingCart, IOrchardServices services, IWebshopSettingsService webshopSettings)
+        public ShoppingCartController(IShoppingCart shoppingCart, IOrchardServices services, IWebshopSettingsService webshopSettings, IOrderService orderService)
         {
             _shoppingCart = shoppingCart;
             _services = services;
             _webshopSettings = webshopSettings;
+            _orderService = orderService;
         }
 
         [HttpPost]
@@ -49,6 +51,7 @@ namespace Cascade.WebShop.Controllers
                 GST: _shoppingCart.GST(),
                 ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()
             );
+
 
             // Return a ShapeResult
             return new ShapeResult(this, shape);

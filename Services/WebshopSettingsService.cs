@@ -3,6 +3,7 @@ using System.Web;
 using Cascade.WebShop.Models;
 using Orchard.Data;
 using Cascade.WebShop.ViewModels;
+using Orchard;
 
 namespace Cascade.WebShop.Services
 {
@@ -10,6 +11,21 @@ namespace Cascade.WebShop.Services
     // This class is very wrong. Should be using the technique under "Using site scope settings" 
     // here: http://www.szmyd.com.pl/blog/how-to-add-settings-to-your-content-parts-and-items#.UUq4tRf-HQU
 
+    public interface IWebshopSettingsService : IDependency
+    {
+        string GetContinueShoppingUrl();
+        string GetAdministratorEmail();
+        bool GetShowSubscribeToMailingList();
+        bool GetShowTermsAndConditions();
+        string GetPrivacyUrl();
+        int GetShippingProductRecordId();
+        string GetTermsAndConditionsUrl();
+        WebShopSettingsRecord Settings { get; }
+        IQueryable<ShippingProductRecord> ShippingProductRecords();
+        WebShopSettingsVM BuildWebShopVM(WebShopSettingsPart part);
+        ShippingProductRecord GetShippingProduct(int id);
+        void Map(WebShopSettingsPart part, WebShopSettingsVM vm);
+    }
 
     public class WebshopSettingsService : IWebshopSettingsService
     {

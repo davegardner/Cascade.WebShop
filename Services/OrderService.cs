@@ -8,6 +8,7 @@ using Cascade.WebShop.Extensibility;
 using Orchard.Settings;
 using Orchard.Services;
 using Orchard;
+using Cascade.WebShop.Helpers;
 
 namespace Cascade.WebShop.Services
 {
@@ -17,6 +18,11 @@ namespace Cascade.WebShop.Services
         /// Creates a new order based on the specified ShoppingCartItems
         /// </summary>
         OrderRecordPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items);
+
+        /// <summary>
+        /// Creates a new empty order with a status of 'Invalid'
+        /// </summary>
+        OrderRecordPart CreateOrder();
 
         /// <summary>
         /// Gets a list of ProductParts from the specified list of OrderDetails. 
@@ -56,6 +62,15 @@ namespace Cascade.WebShop.Services
             _clock = clock;
         }
 
+        public OrderRecordPart CreateOrder()
+        {
+            var orderPart = _contentManager.Create<OrderRecordPart>("Order");
+            orderPart.CreatedAt = _clock.UtcNow.ToLocalTime();
+            orderPart.Status = OrderStatus.Invalid;
+            orderPart.CustomerId = 0;
+            return orderPart;
+        }
+
         public OrderRecordPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items)
         {
 
@@ -68,8 +83,7 @@ namespace Cascade.WebShop.Services
             if (!itemsArray.Any())
                 throw new ArgumentException("Creating an order with 0 items is not supported", "items");
 
-            var orderPart = _contentManager.Create<OrderRecordPart>("Order");
-            orderPart.CreatedAt = _clock.UtcNow.ToLocalTime();
+            var orderPart = CreateOrder();
             orderPart.CustomerId = customerId;
             orderPart.Status = OrderStatus.New;
         
@@ -102,27 +116,7 @@ namespace Cascade.WebShop.Services
                 };
 
                 orderPart.Details.Add(detail);
-
-                //var detail = _contentManager.Create<OrderDetailPart>("OrderDetail");
-
-                //var detail = new OrderDetailRecord
-                //{
-                //    OrderRecord_Id = orderPart.Id,
-                //    ProductPartRecord_Id = product.Id,
-                //    Quantity = item.Quantity,
-                //    UnitPrice = product.UnitPrice,
-                //    GSTRate = .1m,
-                //    Sku = product.Sku,
-                //    Description = description
-                //};
-
-                //_orderDetailRepository.Create(detail);
-
-                //// Do we need to do this??
-                //orderPart.Details.Add(detail);
             }
-
-            // TODO: ?? Refresh the OrderRecord so we can see the Detail records ??
 
             orderPart.UpdateTotals();
 
@@ -152,19 +146,13 @@ namespace Cascade.WebShop.Services
         public IContentQuery<OrderRecordPart> GetOrders(int customerId)
         {
             return _contentManager.Query<OrderRecordPart, OrderRecord>().Where(o => o.CustomerId == customerId);
-            //return _orderRepository.Table.Where(r => r.CustomerId == customerId);
         }
 
         public IContentQuery<OrderRecordPart> GetOrders()
         {
             return _contentManager.Query<OrderRecordPart, OrderRecord>();
-            //return _orderRepository.Table.Where(r => r.CustomerId == customerId);
         }
 
-        //public IQueryable<OrderRecord> GetOrders()
-        //{
-        //    return _orderRepository.Table;
-        //}
 
         public void UpdateOrderStatus(OrderRecordPart order, PaymentResponse paymentResponse)
         {

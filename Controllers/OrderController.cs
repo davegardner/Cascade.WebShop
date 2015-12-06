@@ -27,10 +27,11 @@ namespace Cascade.WebShop.Controllers
         private readonly IEnumerable<IPaymentServiceProvider> _paymentServiceProviders;
         private readonly IMessageManager _messageManager;
         private readonly IWebshopSettingsService _webshopSettings;
+        private readonly IContentManager _contentManager;
 
         public OrderController(IShapeFactory shapeFactory, IOrderService orderService, IAuthenticationService authenticationService,
             IShoppingCart shoppingCart, ICustomerService customerService, IEnumerable<IPaymentServiceProvider> paymentServiceProviders,
-            IMessageManager messageManager, IWebshopSettingsService webshopSettings)
+            IMessageManager messageManager, IWebshopSettingsService webshopSettings, IContentManager contentManager)
         {
             _shapeFactory = shapeFactory;
             _orderService = orderService;
@@ -41,6 +42,7 @@ namespace Cascade.WebShop.Controllers
             _paymentServiceProviders = paymentServiceProviders;
             _messageManager = messageManager;
             _webshopSettings = webshopSettings;
+            _contentManager = contentManager;
         }
 
         [Themed, HttpPost]
@@ -57,6 +59,11 @@ namespace Cascade.WebShop.Controllers
                 throw new InvalidOperationException("The current user is not a customer");
 
             var order = _orderService.CreateOrder(customer.Id, _shoppingCart.Items);
+
+            // wire up the shipping address that we left dangling
+            var shippingAddress = _customerService.GetShippingAddress(user.Id, 0);
+            shippingAddress.OrderId = order.Id;
+            _contentManager.Publish(shippingAddress.ContentItem);
 
             // Todo: Give paymet service providers a chance to process payment by sending a event. 
             // If no PSP handled the event, we'll just continue by displaying the created order.
@@ -80,8 +87,8 @@ namespace Cascade.WebShop.Controllers
                 Order: order,
                 Products: _orderService.GetProducts(order.Details).ToArray(),
                 Customer: customer,
-                InvoiceAddress: (dynamic)_customerService.GetAddress(user.Id, "InvoiceAddress"),
-                ShippingAddress: (dynamic)_customerService.GetAddress(user.Id, "ShippingAddress")
+                InvoiceAddress: (dynamic)_customerService.GetInvoiceAddress(user.Id),
+                ShippingAddress: (dynamic) shippingAddress
             );
             return new ShapeResult(this, shape);
         }

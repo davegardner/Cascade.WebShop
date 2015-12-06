@@ -1,6 +1,7 @@
 ﻿using Cascade.WebShop.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Cascade.WebShop.Helpers
@@ -17,12 +18,12 @@ namespace Cascade.WebShop.Helpers
             {
                 foreach (var detail in details)
                 {
-                    raw += detail.Id + FieldBreak +
-                        detail.OrderRecord_Id + FieldBreak +
-                        detail.ProductPartRecord_Id + FieldBreak +
-                        detail.Quantity + FieldBreak +
-                        detail.UnitPrice + FieldBreak +
-                        detail.GSTRate + FieldBreak +
+                    raw += detail.Id.ToString() + FieldBreak +
+                        detail.OrderRecord_Id.ToString(CultureInfo.InvariantCulture) + FieldBreak +
+                        detail.ProductPartRecord_Id.ToString(CultureInfo.InvariantCulture) + FieldBreak +
+                        detail.Quantity.ToString(CultureInfo.InvariantCulture) + FieldBreak +
+                        detail.UnitPrice.ToString(CultureInfo.InvariantCulture) + FieldBreak +
+                        detail.GSTRate.ToString(CultureInfo.InvariantCulture) + FieldBreak +
                         StringEncode(detail.Description) + FieldBreak +
                         StringEncode(detail.Sku)
                         + RecordBreak;
@@ -43,12 +44,12 @@ namespace Cascade.WebShop.Helpers
                     OrderDetail detail = new OrderDetail
                     {
                         Deleted = false,
-                        Id = Convert.ToInt32(fields[0]),
-                        OrderRecord_Id = Convert.ToInt32(fields[1]),
-                        ProductPartRecord_Id = Convert.ToInt32(fields[2]),
-                        Quantity = Convert.ToInt32(fields[3]),
-                        UnitPrice = Convert.ToDecimal(fields[4]),
-                        GSTRate = Convert.ToDecimal(fields[5]),
+                        Id = Convert.ToInt32(fields[0], CultureInfo.InvariantCulture),
+                        OrderRecord_Id = Convert.ToInt32(fields[1], CultureInfo.InvariantCulture),
+                        ProductPartRecord_Id = Convert.ToInt32(fields[2], CultureInfo.InvariantCulture),
+                        Quantity = Convert.ToInt32(fields[3], CultureInfo.InvariantCulture),
+                        UnitPrice = Convert.ToDecimal(fields[4], CultureInfo.InvariantCulture),
+                        GSTRate = Convert.ToDecimal(fields[5], CultureInfo.InvariantCulture),
                         Description = StringDecode(fields[6]),
                         Sku = StringDecode(fields[7])
                     };
