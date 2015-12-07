@@ -1,21 +1,52 @@
 ﻿@using System.Web.Mvc.Html
 @using System.Web.Mvc
 @using Cascade.WebShop.ViewModels
+@*@using Orchard.Fields.Fields*@
+@using Orchard.ContentManagement;
 @{
     var addresses = (AddressesViewModel)Model.Addresses;
-
+    var contentItem = (ContentItem)Model.ContentItem;
     Style.Require("Cascade.WebShop.Common");
+    Script.Require("jQuery");
 }
-<h2>
-    Address Details</h2>
-<p>@T("Please provide us with your invoice address and shipping address. If both addresses are the same, then you only need to provide us with your invoice address.")</p>
-@using (Html.BeginFormAntiForgeryPost(Url.Action("SelectAddress", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
-{
-    @Html.EditorFor(m => addresses.InvoiceAddress)
-    @Html.EditorFor(m => addresses.ShippingAddress)
-    
-    <div class="well form-actions" >
-        <a class="button catalog" href="@Model.ContinueShoppingUrl">Return to shopping</a>
-        <button type="submit" class="btn btn-primary pull-right">@T("Finish")</button>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>
+                Address Details
+            </h2>
+            <p>@T("Please provide us with your invoice address and shipping address. If both addresses are the same, then you only need to provide us with your invoice address.")</p>
+        </div>
     </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @using (Html.BeginFormAntiForgeryPost(Url.Action("SelectAddress", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.EditorFor(m => addresses.InvoiceAddress)
+
+                <div style="margin:20px 0;">
+                    @Html.EditorFor(m => addresses.ShippingAddressSupplied)
+                    <label for="@Html.FieldIdFor(m => addresses.ShippingAddressSupplied)" class="forcheckbox"> @T("Ship to a different address?")</label>
+                </div>
+                <div id="shippingAddressWrapper" class="hidden">
+                    @Html.EditorFor(m => addresses.ShippingAddress)
+
+                </div>
+                <div class="well form-actions">
+                    <a class="btn btn-info" href="@Model.ContinueShoppingUrl">Return to shopping</a>
+                    <button type="submit" class="btn btn-primary pull-right">@T("Finish")</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@using (Script.Foot())
+{
+    <script type="text/javascript">
+        $("#@Html.FieldIdFor(m => addresses.ShippingAddressSupplied)").click(function () {
+            $("#shippingAddressWrapper").toggleClass("hidden");
+        });
+    </script>
 }

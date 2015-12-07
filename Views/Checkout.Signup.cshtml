@@ -9,57 +9,70 @@
     string showTerms = signup.ShowAcceptTerms ? "block" : "none";
     string showSubscribe = signup.ShowReceiveNewsletter ? "block" : "none";
 }
-<h2>@T("New customer")</h2>
-<p class="text-info">@T("Please provide some basic details so we can recognize you:")</p>
-@Html.ValidationSummary()
-@using (Html.BeginFormAntiForgeryPost(Url.Action("Signup", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
-{
-    <article>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+
+            <h2>@T("New customer")</h2>
+            <p class="text-info">@T("Please provide some basic details so we can recognize you:")</p>
+            @Html.ValidationSummary()
+        </div>
+    </div>
+
+    @using (Html.BeginFormAntiForgeryPost(Url.Action("Signup", "Checkout", new { area = "Cascade.WebShop" }), FormMethod.Post, new { @class = "form-horizontal" }))
+    {
         @Html.HiddenFor(m => signup.ShowReceiveNewsletter)
         @Html.HiddenFor(m => signup.ShowAcceptTerms)
         @Html.HiddenFor(m => signup.PrivacyUrl)
         @Html.HiddenFor(m => signup.TermsAndConditionsUrl)
         @Html.HiddenFor(m => signup.ContinueShoppingUrl)
-        <div class="control-group">
-            <div class="control-label">@Html.LabelFor(m => signup.Title, T("Title"))</div>
-            <div class="controls">@Html.EditorFor(m => signup.Title)</div>
+        <div class="form-group">
+            <div class="control-label col-sm-2 ">@Html.LabelFor(m => signup.Title, T("Title"))</div>
+            <div class="col-sm-10">@Html.TextBoxFor(m => signup.Title, new { @class = "form-control" })</div>
         </div>
-        <div class="control-group">
-            <div class="control-label">@Html.LabelFor(m => signup.FirstName, T("First name"))</div>
-            <div class="controls">@Html.EditorFor(m => signup.FirstName)</div>
+        <div class="form-group">
+            <div class="control-label col-sm-2">@Html.LabelFor(m => signup.FirstName, T("First name"))</div>
+            <div class="col-sm-10">@Html.TextBoxFor(m => signup.FirstName, new { @class = "form-control" })</div>
         </div>
-        <div class="control-group">
-            <div class="control-label">@Html.LabelFor(m => signup.LastName, T("Last name"))</div>
-            <div class="controls">@Html.EditorFor(m => signup.LastName)</div>
+        <div class="form-group">
+            <div class="control-label col-sm-2">@Html.LabelFor(m => signup.LastName, T("Last name"))</div>
+            <div class="col-sm-10">@Html.TextBoxFor(m => signup.LastName, new { @class = "form-control" })</div>
         </div>
-        <div class="control-group">
-            <div class="control-label">@Html.LabelFor(m => signup.Email, T("Email"))</div>
-            <div class="controls wide">@Html.EditorFor(m => signup.Email)</div>
+        <div class="form-group">
+            <div class="control-label col-sm-2">@Html.LabelFor(m => signup.Email, T("Email"))</div>
+            <div class="col-sm-10 wide">@Html.TextBoxFor(m => signup.Email, new { @class = "form-control" })</div>
         </div>
-        <div class="control-group">
-            <div class="control-label">@Html.LabelFor(m => signup.Password, T("Password"))</div>
-            <div class="controls">@Html.EditorFor(m => signup.Password)</div>
+        <div class="form-group">
+            <div class="control-label col-sm-2">@Html.LabelFor(m => signup.Password, T("Password"))</div>
+            <div class="col-sm-10">@Html.PasswordFor(m => signup.Password, new { @class = "form-control" })</div>
         </div>
-        <div class="control-group">
-            <div class="control-label">@Html.LabelFor(m => signup.RepeatPassword, T("Repeat password"))</div>
-            <div class="controls">@Html.EditorFor(m => signup.RepeatPassword)</div>
+        <div class="form-group">
+            <div class="control-label col-sm-2">@Html.LabelFor(m => signup.RepeatPassword, T("Repeat password"))</div>
+            <div class="col-sm-10">@Html.PasswordFor(m => signup.RepeatPassword, new { @class = "form-control" })</div>
         </div>
-        <div class="control-group">
-            <div class="controls">
-                <label class="forcheckbox" style='display: @showSubscribe'>@Html.CheckBoxFor(m => signup.ReceiveNewsletter)
-                    @T("Subscribe to our mailing list")</label>
-                <label class="forcheckbox" style='display: @showSubscribe'>@Html.CheckBoxFor(m => signup.ReceivePost)
-                    @T("Receive occasional snail mail (such as invitations to openings and other events)")</label>
-                <label class="forcheckbox" style='display: @showTerms'>@Html.CheckBoxFor(m => signup.AcceptTerms)
-                    @T("I have read and accept the <a href=\"{0}\" target=\"_blank\">Terms and Conditions</a>", signup.TermsAndConditionsUrl)</label>
+        <div class="form-group">
+            <div class="col-sm-10">
+                <label class="forcheckbox" style='display: @showSubscribe'>
+                    @Html.CheckBoxFor(m => signup.ReceiveNewsletter, new { @class = "form-control" })
+                    @T("Subscribe to our mailing list")
+                </label>
+                <label class="forcheckbox" style='display: @showSubscribe'>
+                    @Html.CheckBoxFor(m => signup.ReceivePost, new { @class = "form-control" })
+                    @T("Receive occasional snail mail (such as invitations to openings and other events)")
+                </label>
+                <label class="forcheckbox" style='display: @showTerms'>
+                    @Html.CheckBoxFor(m => signup.AcceptTerms, new { @class = "form-control" })
+                    @T("I have read and accept the <a href=\"{0}\" target=\"_blank\">Terms and Conditions</a>", signup.TermsAndConditionsUrl)
+                </label>
             </div>
         </div>
         <footer>
             <div class="form-actions">
-                    <a class="button catalog" href="@signup.ContinueShoppingUrl">Return to shopping</a>
-                    <button type="submit" class="btn btn-primary pull-right">
-                        Agree and proceed to payment</button>
+                <a class="btn btn-info" href="@signup.ContinueShoppingUrl">Return to shopping</a>
+                <button type="submit" class="btn btn-primary pull-right">
+                    Proceed to payment
+                </button>
             </div>
         </footer>
-    </article>
-}
+    }
+</div>

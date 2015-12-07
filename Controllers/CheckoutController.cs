@@ -12,6 +12,7 @@ using Orchard.Messaging.Services;
 using Orchard.Mvc;
 using Orchard.Security;
 using Orchard.Themes;
+using Orchard.Email.Services;
 
 namespace Cascade.WebShop.Controllers
 {
@@ -23,13 +24,14 @@ namespace Cascade.WebShop.Controllers
         private readonly IMembershipService _membershipService;
         private readonly IShoppingCart _shoppingCart;
         private readonly IWebshopSettingsService _webshopSettings;
-        private readonly IMessageManager _messageManager;
+        //private readonly IMessageManager _messageManager;
+        private readonly ISmtpChannel _email;
 
 
         private Localizer T { get; set; }
 
         public CheckoutController(IOrchardServices services, IAuthenticationService authenticationService, ICustomerService customerService, IMembershipService membershipService,
-            IShoppingCart shoppingCart, IWebshopSettingsService webshopSettings, IMessageManager messageManager)
+            IShoppingCart shoppingCart, IWebshopSettingsService webshopSettings, ISmtpChannel email)
         {
             _authenticationService = authenticationService;
             _services = services;
@@ -37,11 +39,12 @@ namespace Cascade.WebShop.Controllers
             _membershipService = membershipService;
             _shoppingCart = shoppingCart;
             _webshopSettings = webshopSettings;
-            _messageManager = messageManager;
+            _email = email;
+            //_messageManager = messageManager;
 
             T = NullLocalizer.Instance;
         }
-        
+
         [Themed]
         public ActionResult SignupOrLogin()
         {
@@ -68,7 +71,7 @@ namespace Cascade.WebShop.Controllers
             return new ShapeResult(this, shape);
         }
 
-     
+
         [Themed, HttpPost]
         public ActionResult Signup(SignupViewModel signup)
         {
@@ -88,20 +91,38 @@ namespace Cascade.WebShop.Controllers
             _authenticationService.SignIn(customer.User, true);
 
             // Welcome message gets sent whether or not they subscribe to the mailing list
-            _messageManager.Send(new [] {signup.Email}, "WELCOME", "email", new Dictionary<string, string> 
-                    { 
-                        { "Subject", _webshopSettings.Settings.WelcomeSubject},
-                        { "BodyTemplate", _webshopSettings.Settings.WelcomeBodyTemplate },
-                        { "LastName", customer.LastName }, 
-                        { "FirstName", customer.FirstName }, 
-                        { "Subscribed", signup.ReceiveNewsletter.ToString() },
-                        { "UnsubscribeEmail", _webshopSettings.Settings.UnsubscribeEmail}
-                    });
+            _email.Process(new Dictionary<string, object>
+            {
+                { "Recipients", signup.Email},
+                { "Subject", _webshopSettings.Settings.WelcomeSubject},
+                { "BodyTemplate", MergeBody(customer) },
+            });
+
+            //_messageManager.Send(new[] { signup.Email }, "WELCOME", "email", new Dictionary<string, string> 
+            //        { 
+            //            { "Subject", _webshopSettings.Settings.WelcomeSubject},
+            //            { "BodyTemplate", _webshopSettings.Settings.WelcomeBodyTemplate },
+            //            { "LastName", customer.LastName }, 
+            //            { "FirstName", customer.FirstName }, 
+            //            { "Subscribed", signup.ReceiveNewsletter.ToString() },
+            //            { "UnsubscribeEmail", _webshopSettings.Settings.UnsubscribeEmail}
+            //        });
 
 
             return RedirectToAction("SelectAddress");
         }
 
+        private object MergeBody(CustomerPart customer)
+        {
+            string unsubscribe = _webshopSettings.Settings.UnsubscribeEmail;
+            string body = string.Format(_webshopSettings.Settings.WelcomeBodyTemplate,
+                customer.FirstName, customer.LastName);
+            //if (subscribed && !string.IsNullOrWhiteSpace(unsubscribe))
+            //    body += "<br/><br/>PS You are subscribed to our mailing list. To unsubscribe please send an email to " + unsubscribe;
+            return body;
+        }
+        
+      
         [Themed]
         public ActionResult Login()
         {
@@ -122,9 +143,9 @@ namespace Cascade.WebShop.Controllers
                 ModelState.AddModelError("Email", T("Unknown username/password").ToString());
             }
             else
-            // Don't allow users who are not customers
-            if (user.ContentItem.As<CustomerPart>() == null)
-                ModelState.AddModelError("UserType", "Valid User but not a Customer. Please register as a Customer first.");
+                // Don't allow users who are not customers
+                if (user.ContentItem.As<CustomerPart>() == null)
+                    ModelState.AddModelError("UserType", "Valid User but not a Customer. Please register as a Customer first.");
 
             // If there are any model errors, redisplay the login form
             if (!ModelState.IsValid)
@@ -179,40 +200,26 @@ namespace Cascade.WebShop.Controllers
             if (currentUser == null)
                 throw new OrchardSecurityException(T("Login required"));
 
-            addresses.InvoiceAddress.CountryCodes = CountryCode.SelectList;
-            addresses.ShippingAddress.CountryCodes = CountryCode.SelectList;
+            if (!addresses.InvoiceAddress.IsValidAddress())
+                ModelState.AddModelError("InvalidInvoiceAddress", "Please correct the Invoice Address and try again.");
 
+            if(addresses.ShippingAddressSupplied && !addresses.ShippingAddress.IsValidAddress())
+                ModelState.AddModelError("InvalidShippingAddress", "Please correct the Shipping Address and try again.");
+            
             if (!ModelState.IsValid)
             {
+                addresses.InvoiceAddress.CountryCodes = CountryCode.SelectList;
+                addresses.ShippingAddress.CountryCodes = CountryCode.SelectList;
+
                 return new ShapeResult(this, _services.New.Checkout_SelectAddress(Addresses: addresses, ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()));
             }
 
             var customer = currentUser.ContentItem.As<CustomerPart>();
 
-            if (addresses.InvoiceAddress.IsValidAddress())
-                MapAddress(addresses.InvoiceAddress, "InvoiceAddress", customer);
-            if (addresses.ShippingAddress.IsValidAddress())
-                MapAddress(addresses.ShippingAddress, "ShippingAddress", customer);
+            MapAddress(addresses.InvoiceAddress, "InvoiceAddress", customer);
 
-            // subscribe to mailing list if they asked for it
-            if (_webshopSettings.Settings.UseMailChimp && customer.SubscribeToMailingList)
-            {
-                _messageManager.Send(new[] { currentUser.Email }, "SUBSCRIBE", "email", new Dictionary<string, string>
-                    {
-                        {"LastName", customer.LastName},
-                        {"FirstName", customer.FirstName},
-                        {"Address", addresses.InvoiceAddress.Address},
-                        {"City", addresses.InvoiceAddress.City},
-                        {"State", addresses.InvoiceAddress.State},
-                        {"CountryCode", addresses.InvoiceAddress.CountryCode},
-                        {"Postcode", addresses.InvoiceAddress.Postcode},
-                        {"ReceivePost", customer.ReceivePost.ToString()} ,
-                        {"MailChimpApiKey", _webshopSettings.Settings.MailChimpApiKey},
-                        {"MailChimpListName", _webshopSettings.Settings.MailChimpListName},
-                        {"MailChimpGroupName", _webshopSettings.Settings.MailChimpGroupName},
-                        {"MailChimpGroupValue", _webshopSettings.Settings.MailChimpGroupValue}
-                    });
-            }
+            if(addresses.ShippingAddressSupplied)
+                MapAddress(addresses.ShippingAddress, "ShippingAddress", customer);
 
             return RedirectToAction("Summary");
         }
@@ -270,7 +277,7 @@ namespace Cascade.WebShop.Controllers
                 throw new OrchardSecurityException(T("Login required"));
 
             dynamic invoiceAddress = _customerService.GetInvoiceAddress(user.Id);
-            dynamic shippingAddress = _customerService.GetLastShippingAddress(user.Id);
+            dynamic shippingAddress = _customerService.GetShippingAddress(user.Id, 0);
             dynamic shoppingCartShape = _services.New.ShoppingCart();
 
             var query = _shoppingCart.GetProducts().Select(x => _services.New.ShoppingCartItem(

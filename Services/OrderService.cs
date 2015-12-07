@@ -17,12 +17,12 @@ namespace Cascade.WebShop.Services
         /// <summary>
         /// Creates a new order based on the specified ShoppingCartItems
         /// </summary>
-        OrderRecordPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items);
+        OrderPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items);
 
         /// <summary>
         /// Creates a new empty order with a status of 'Invalid'
         /// </summary>
-        OrderRecordPart CreateOrder();
+        OrderPart CreateOrder();
 
         /// <summary>
         /// Gets a list of ProductParts from the specified list of OrderDetails. 
@@ -31,13 +31,13 @@ namespace Cascade.WebShop.Services
         /// </summary>
         IEnumerable<ProductPart> GetProducts(IEnumerable<OrderDetail> orderDetails);
 
-        OrderRecordPart GetOrderByNumber(string orderNumber);
-        OrderRecordPart GetOrder(int id);
+        OrderPart GetOrderByNumber(string orderNumber);
+        OrderPart GetOrder(int id);
 
-        IContentQuery<OrderRecordPart> GetOrders(int customerId);
-        IContentQuery<OrderRecordPart> GetOrders();
+        IContentQuery<OrderPart> GetOrders(int customerId);
+        IContentQuery<OrderPart> GetOrders();
 
-        void UpdateOrderStatus(OrderRecordPart order, PaymentResponse paymentResponse);
+        void UpdateOrderStatus(OrderPart order, PaymentResponse paymentResponse);
 
     }
     
@@ -62,16 +62,16 @@ namespace Cascade.WebShop.Services
             _clock = clock;
         }
 
-        public OrderRecordPart CreateOrder()
+        public OrderPart CreateOrder()
         {
-            var orderPart = _contentManager.Create<OrderRecordPart>("Order");
+            var orderPart = _contentManager.Create<OrderPart>("Order");
             orderPart.CreatedAt = _clock.UtcNow.ToLocalTime();
             orderPart.Status = OrderStatus.Invalid;
             orderPart.CustomerId = 0;
             return orderPart;
         }
 
-        public OrderRecordPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items)
+        public OrderPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items)
         {
 
             if (items == null)
@@ -132,29 +132,29 @@ namespace Cascade.WebShop.Services
             return _contentManager.GetMany<ProductPart>(productIds, VersionOptions.Latest, QueryHints.Empty);
         }
 
-        public OrderRecordPart GetOrderByNumber(string orderNumber)
+        public OrderPart GetOrderByNumber(string orderNumber)
         {
             var orderId = int.Parse(orderNumber) - 1000;
-            return _contentManager.Get<OrderRecordPart>(orderId);
+            return _contentManager.Get<OrderPart>(orderId);
         }
 
-        public OrderRecordPart GetOrder(int id)
+        public OrderPart GetOrder(int id)
         {
-            return _contentManager.Get<OrderRecordPart>(id);
+            return _contentManager.Get<OrderPart>(id);
         }
 
-        public IContentQuery<OrderRecordPart> GetOrders(int customerId)
+        public IContentQuery<OrderPart> GetOrders(int customerId)
         {
-            return _contentManager.Query<OrderRecordPart, OrderRecord>().Where(o => o.CustomerId == customerId);
+            return _contentManager.Query<OrderPart, OrderRecord>().Where(o => o.CustomerId == customerId);
         }
 
-        public IContentQuery<OrderRecordPart> GetOrders()
+        public IContentQuery<OrderPart> GetOrders()
         {
-            return _contentManager.Query<OrderRecordPart, OrderRecord>();
+            return _contentManager.Query<OrderPart, OrderRecord>();
         }
 
 
-        public void UpdateOrderStatus(OrderRecordPart order, PaymentResponse paymentResponse)
+        public void UpdateOrderStatus(OrderPart order, PaymentResponse paymentResponse)
         {
             OrderStatus orderStatus;
 

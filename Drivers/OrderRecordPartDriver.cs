@@ -5,7 +5,7 @@ using Cascade.WebShop.Services;
 
 namespace Cascade.WebShop.Drivers
 {
-    public class OrderRecordPartDriver : ContentPartDriver<OrderRecordPart>
+    public class OrderRecordPartDriver : ContentPartDriver<OrderPart>
     {
 
         //private readonly IOrderRecordService _service;
@@ -20,7 +20,7 @@ namespace Cascade.WebShop.Drivers
             get { return "OrderRecord"; }
         }
 
-        protected override DriverResult Display(OrderRecordPart part, string displayType, dynamic shapeHelper)
+        protected override DriverResult Display(OrderPart part, string displayType, dynamic shapeHelper)
         {
             return ContentShape("Parts_OrderRecord", () => shapeHelper.Parts_OrderRecord(
                      OrderRecordPart: part
@@ -48,7 +48,7 @@ namespace Cascade.WebShop.Drivers
             //         );
         }
 
-        protected override DriverResult Editor(OrderRecordPart part, dynamic shapeHelper)
+        protected override DriverResult Editor(OrderPart part, dynamic shapeHelper)
         {
             //if (string.IsNullOrWhiteSpace(part.Sku))
             //    part.Sku = _service.GetNextSku();
@@ -57,7 +57,7 @@ namespace Cascade.WebShop.Drivers
                 .EditorTemplate(TemplateName: "Parts/OrderRecord", Model: part, Prefix: Prefix));
         }
 
-        protected override DriverResult Editor(OrderRecordPart part, IUpdateModel updater, dynamic shapeHelper)
+        protected override DriverResult Editor(OrderPart part, IUpdateModel updater, dynamic shapeHelper)
         {
             updater.TryUpdateModel(part, Prefix, null, null);
             return Editor(part, shapeHelper);

@@ -2,7 +2,7 @@
 @using Cascade.WebShop.ViewModels
 @{
     var editModel = (EditOrderVM)Model.EditModel;
-    var order = (OrderRecordPart)Model.Order;
+    var order = (OrderPart)Model.Order;
     //var details = (IList<dynamic>)Model.Details;
     var details = order.Details;
     var quantity = 0;

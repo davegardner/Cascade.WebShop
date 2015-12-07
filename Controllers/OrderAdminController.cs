@@ -77,19 +77,19 @@ namespace Cascade.WebShop.Controllers
             return View((object)model);
         }
 
-        private dynamic BuildModel(OrderRecordPart order, EditOrderVM editModel)
+        private dynamic BuildModel(OrderPart order, EditOrderVM editModel)
         {
             CustomerPart customer = _customerService.GetCustomer(order.CustomerId);
             AddressPart shipAddressPart = _customerService.GetShippingAddress(customer.Id, order.Id);
             AddressPart custAddressPart = _customerService.GetInvoiceAddress(customer.Id);
 
             string shipName = string.Empty;
-            if (!string.IsNullOrWhiteSpace(shipAddressPart.Name))
+            if (shipAddressPart != null && !string.IsNullOrWhiteSpace(shipAddressPart.Name))
                 shipName = shipAddressPart.Name;
 
-            string shipAddress = shipAddressPart.Address;
-            string shipAddress2 = shipAddressPart.City + " " + shipAddressPart.State + " " + shipAddressPart.Postcode;
-            string shipCountry = shipAddressPart.Country;
+            string shipAddress = shipAddressPart == null ? "(same as Invoice Address)" : shipAddressPart.Address;
+            string shipAddress2 = shipAddressPart == null ? string.Empty : shipAddressPart.City + " " + shipAddressPart.State + " " + shipAddressPart.Postcode;
+            string shipCountry = shipAddressPart == null ? string.Empty : shipAddressPart.Country;
 
             string custAddress = custAddressPart.Address;
             string custAddress2 = custAddressPart.City + " " + custAddressPart.State + " " + custAddressPart.Postcode;

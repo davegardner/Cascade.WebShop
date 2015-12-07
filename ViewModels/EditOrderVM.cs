@@ -12,7 +12,7 @@ namespace Cascade.WebShop.ViewModels
         {
         }
 
-        public EditOrderVM(OrderRecordPart order)
+        public EditOrderVM(OrderPart order)
         {
             Id = order.Id;
             Status = order.Status;

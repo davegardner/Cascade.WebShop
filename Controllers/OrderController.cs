@@ -9,7 +9,7 @@ using Orchard;
 using Orchard.ContentManagement;
 using Orchard.DisplayManagement;
 using Orchard.Localization;
-using Orchard.Messaging.Services;
+using Orchard.Email.Services;
 using Orchard.Mvc;
 using Orchard.Security;
 using Orchard.Themes;
@@ -25,13 +25,13 @@ namespace Cascade.WebShop.Controllers
         private readonly ICustomerService _customerService;
         private readonly Localizer _t;
         private readonly IEnumerable<IPaymentServiceProvider> _paymentServiceProviders;
-        private readonly IMessageManager _messageManager;
+        private readonly ISmtpChannel _messageManager;
         private readonly IWebshopSettingsService _webshopSettings;
         private readonly IContentManager _contentManager;
 
         public OrderController(IShapeFactory shapeFactory, IOrderService orderService, IAuthenticationService authenticationService,
             IShoppingCart shoppingCart, ICustomerService customerService, IEnumerable<IPaymentServiceProvider> paymentServiceProviders,
-            IMessageManager messageManager, IWebshopSettingsService webshopSettings, IContentManager contentManager)
+            ISmtpChannel messageManager, IWebshopSettingsService webshopSettings, IContentManager contentManager)
         {
             _shapeFactory = shapeFactory;
             _orderService = orderService;
@@ -62,8 +62,11 @@ namespace Cascade.WebShop.Controllers
 
             // wire up the shipping address that we left dangling
             var shippingAddress = _customerService.GetShippingAddress(user.Id, 0);
-            shippingAddress.OrderId = order.Id;
-            _contentManager.Publish(shippingAddress.ContentItem);
+            if (shippingAddress != null)
+            {
+                shippingAddress.OrderId = order.Id;
+                _contentManager.Publish(shippingAddress.ContentItem);
+            }
 
             // Todo: Give paymet service providers a chance to process payment by sending a event. 
             // If no PSP handled the event, we'll just continue by displaying the created order.
@@ -88,7 +91,7 @@ namespace Cascade.WebShop.Controllers
                 Products: _orderService.GetProducts(order.Details).ToArray(),
                 Customer: customer,
                 InvoiceAddress: (dynamic)_customerService.GetInvoiceAddress(user.Id),
-                ShippingAddress: (dynamic) shippingAddress
+                ShippingAddress: (dynamic)shippingAddress
             );
             return new ShapeResult(this, shape);
         }
@@ -128,20 +131,35 @@ namespace Cascade.WebShop.Controllers
                 // send an email confirmation to the customer
                 string subject = string.Format("Your Order Number {0} has been received", order.Id);
                 string body = string.Format("Dear {0}<br/><br/>Thank you for your order.<br/><br/>You will receive a Tax Invoice when your order is shipped.", customer.FirstName);
-                _messageManager.Send(user.ContentItem.Record, "ORDER_RECEIVED", "email", new Dictionary<string, string>
+                _messageManager.Process(new Dictionary<string, object>
                 { 
+                    { "Recipients", user.Email},
                     { "Subject", subject }, 
                     { "Body", body} 
                 });
 
+                //_messageManager.Send(user.ContentItem.Record, "ORDER_RECEIVED", "email", new Dictionary<string, string>
+                //{ 
+                //    { "Subject", subject }, 
+                //    { "Body", body} 
+                //});
+
                 // send a copy of the order to the administator
-                string adminEmail = _webshopSettings.GetAdministratorEmail();
-                if (!string.IsNullOrWhiteSpace(adminEmail))
-                    _messageManager.Send(new List<string> { adminEmail}, "ORDER_RECEIVED", "email", new Dictionary<string, string> 
-                    { 
-                        { "Subject", string.Format("Order Number {0} received from {1} {2}", order.Id, customer.FirstName, customer.LastName) }, 
-                        { "Body", body} 
-                    });
+                _messageManager.Process(new Dictionary<string, object>
+                { 
+                    { "Recipients", _webshopSettings.GetAdministratorEmail()},
+                    { "Subject", string.Format("Order Number {0} received from {1} {2}", order.Id, customer.FirstName, customer.LastName) }, 
+                    { "Body", body} 
+                });
+
+
+                //string adminEmail = _webshopSettings.GetAdministratorEmail();
+                //if (!string.IsNullOrWhiteSpace(adminEmail))
+                //    _messageManager.Send(new List<string> { adminEmail}, "ORDER_RECEIVED", "email", new Dictionary<string, string> 
+                //    { 
+                //        { "Subject", string.Format("Order Number {0} received from {1} {2}", order.Id, customer.FirstName, customer.LastName) }, 
+                //        { "Body", body} 
+                //    });
 
                 // decrement stock levels
                 _shoppingCart.RemoveFromStock();
@@ -152,7 +170,5 @@ namespace Cascade.WebShop.Controllers
 
             return new ShapeResult(this, _shapeFactory.Order_PaymentResponse(Order: order, PaymentResponse: args, ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()));
         }
-
-
     }
 }

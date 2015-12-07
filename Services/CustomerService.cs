@@ -45,12 +45,14 @@ namespace Cascade.WebShop.Services
         private readonly IOrchardServices _orchardServices;
         private readonly IMembershipService _membershipService;
         private readonly IClock _clock;
+        private readonly IOrderService _orderService;
 
-        public CustomerService(IOrchardServices orchardServices, IMembershipService membershipService, IClock clock)
+        public CustomerService(IOrchardServices orchardServices, IMembershipService membershipService, IClock clock, IOrderService orderService)
         {
             _orchardServices = orchardServices;
             _membershipService = membershipService;
             _clock = clock;
+            _orderService = orderService;
         }
 
         public CustomerPart CreateCustomer(string email, string password)
@@ -121,17 +123,25 @@ namespace Cascade.WebShop.Services
 
         public AddressPart GetShippingAddress(int customerId, int orderId)
         {
-            return GetAddresses(customerId).First(a => a.OrderId == orderId);
+            return GetAddresses(customerId).FirstOrDefault(a => a.OrderId == orderId);
         }
 
         public AddressPart GetInvoiceAddress(int customerId)
         {
-            return GetAddresses(customerId).First(a => a.Type == "InvoiceAddress");
+            return GetAddresses(customerId).FirstOrDefault(a => a.Type == "InvoiceAddress");
         }
 
         public AddressPart GetLastShippingAddress(int customerId)
         {
-            return GetAddresses(customerId).FirstOrDefault(a => a.Type == "ShippingAddress");
+            var lastOrder = _orderService.GetOrders(customerId)
+                .OrderByDescending<OrderRecord>(o=>o.Id)
+                .Slice(1)
+                .FirstOrDefault();
+
+            if(lastOrder == null)
+                return null;
+
+            return GetShippingAddress(customerId, lastOrder.Id);
         }
     }
 }

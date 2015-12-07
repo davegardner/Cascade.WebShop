@@ -12,7 +12,7 @@ namespace Cascade.WebShop.Handlers
         public OrderPartHandler(IRepository<OrderRecord> repository)
         {
             Filters.Add(StorageFilter.For(repository));
-            OnLoaded<OrderRecordPart>((context, part) =>
+            OnLoaded<OrderPart>((context, part) =>
             {
                 if (part == null)
                     return;
@@ -21,7 +21,7 @@ namespace Cascade.WebShop.Handlers
 
             });
 
-            OnUpdated<OrderRecordPart>((context, part) =>
+            OnUpdated<OrderPart>((context, part) =>
             {
                 if (part == null)
                     return;

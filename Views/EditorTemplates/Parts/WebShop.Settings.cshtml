@@ -4,64 +4,70 @@
     <legend>@T("Webshop")</legend>
     <div>
         <label for="@Html.FieldIdFor(m=>m.AdministratorEmailAddress)">@T("Administrator email address")</label>
-        @Html.TextBoxFor(m=>m.AdministratorEmailAddress, new { @class = "textMedium" })        
-        
+        @Html.TextBoxFor(m => m.AdministratorEmailAddress, new { @class = "textMedium" })
+
         <label for="@Html.FieldIdFor(m => m.ContinueShoppingUrl)">@T("Continue Shopping Url (eg: /Gallery)")</label>
         @Html.TextBoxFor(m => m.ContinueShoppingUrl, new { @class = "textMedium" })
         @Html.ValidationMessage("ContinueShoppingUrl", "*")
-      
+
         <label for="@Html.FieldIdFor(m => m.TermsAndConditionsUrl)">@T("Terms and Conditions Url (eg: /TermsAndConditions)")</label>
         @Html.TextBoxFor(m => m.TermsAndConditionsUrl, new { @class = "textMedium" })
-        
+
         <label for="@Html.FieldIdFor(m => m.PrivacyUrl)">@T("Privacy Statement Url (eg: /Privacy)")</label>
         @Html.TextBoxFor(m => m.PrivacyUrl, new { @class = "textMedium" })
         <div>
             @Html.CheckBoxFor(m => m.ShowSubscribeToMailingList)
-            <label for="@Html.FieldIdFor(m => m.ShowSubscribeToMailingList)" class="forcheckbox">@T("Prompt new users to subscribe to the mailing list")
-            </label>
-        </div>
-        <div>
-            @Html.CheckBoxFor(m => m.ShowTermsAndConditions)
-            <label for="@Html.FieldIdFor(m => m.ShowTermsAndConditions)" class="forcheckbox">@T("Prompt new users to acknowledge the terms and conditions")
-            </label>
-        </div>
-
-         <div>
-            <label for="ShippingProduct">@T("Shipping Product to include on all orders")</label>
-            @Html.DropDownListFor(m=>m.ShippingProductRecordId, new SelectList(Model.ShippingProducts, "Id", "Title"))
-        </div>
-
-
-        <fieldset style="margin-top: 20px;">
-            <legend>@T("Welcome email for new customers")</legend>
-            <p>This email is sent to all new Customers, regardless of whether they subscribed to the mailing list or not. You probably don't want to send this if you select MailChimp below.</p>
-            <div>
-                @Html.CheckBoxFor(m => m.SendWelcomeEmail)
-                <label for="@Html.FieldIdFor(m => m.SendWelcomeEmail)" class="forcheckbox">@T("Send an email to welcome new users")
-                </label>
-            </div>
-            <label for="@Html.FieldIdFor(m => m.WelcomeSubject)">@T("Welcome email subject line")</label>
-            @Html.TextBoxFor(m => m.WelcomeSubject, new { @class = "textMedium" })
-            <label for="@Html.FieldIdFor(m => m.WelcomeBodyTemplate)">@T("Welcome email body template (Use &lt;br/&gt; to start a new line, {0} First Name, {1} Last Name)")</label>
-            @Html.TextAreaFor(m => m.WelcomeBodyTemplate)
-            <label for="@Html.FieldIdFor(m => m.UnsubscribeEmail)">@T("Email address for customer to unsubscribe")</label>
-            @Html.TextBoxFor(m => m.UnsubscribeEmail, new { @class = "textMedium" })
-        </fieldset>
-         <fieldset style="margin-top: 20px;">
-            <legend>@T("MailChimp list management settings")</legend>
-            <div>
-            @Html.CheckBoxFor(m => m.UseMailChimp)
-            <label for="@Html.FieldIdFor(m => m.UseMailChimp)" class="forcheckbox">@T("Use MailChimp to manage subscriber lists")
-            </label>
-            </div>
-        <label for="@Html.FieldIdFor(m => m.MailChimpApiKey)">@T("MailChimp API Key")</label>
-            @Html.TextBoxFor(m => m.MailChimpApiKey, new { @class = "textMedium" })
-        <label for="@Html.FieldIdFor(m => m.MailChimpListName)">@T("MailChimp List to which subscribers will be added")</label>
-            @Html.TextBoxFor(m => m.MailChimpListName, new { @class = "textMedium" })
-        <label for="@Html.FieldIdFor(m => m.MailChimpGroupName)">@T("Group Name")</label>
-            @Html.TextBoxFor(m => m.MailChimpGroupName, new { @class = "textMedium" })
-        <label for="@Html.FieldIdFor(m => m.MailChimpGroupValue)">@T("Group Value (must be specified if a Group Name is specified)")</label>
-            @Html.TextBoxFor(m => m.MailChimpGroupValue, new { @class = "textMedium" })
-        </fieldset>
+            <label for="@Html.FieldIdFor(m => m.ShowSubscribeToMailingList)" class="forcheckbox">
+                @T("Prompt new users to subscribe to the mailing list")
+        </label>
     </div>
+    <div>
+        @Html.CheckBoxFor(m => m.ShowTermsAndConditions)
+        <label for="@Html.FieldIdFor(m => m.ShowTermsAndConditions)" class="forcheckbox">
+            @T("Prompt new users to acknowledge the terms and conditions")
+    </label>
+</div>
+
+<div>
+    <label for="ShippingProduct">@T("Shipping Product to include on all orders")</label>
+    @Html.DropDownListFor(m => m.ShippingProductRecordId, new SelectList(Model.ShippingProducts, "Id", "Title"))
+</div>
+
+
+<fieldset style="margin-top: 20px;">
+    <legend>@T("Welcome email for new customers")</legend>
+    <p>This email is sent to all new Customers, regardless of whether they subscribed to the mailing list or not. </p>
+    <div>
+        @Html.CheckBoxFor(m => m.SendWelcomeEmail)
+        <label for="@Html.FieldIdFor(m => m.SendWelcomeEmail)" class="forcheckbox">
+            @T("Send an email to welcome new users")
+    </label>
+</div>
+<label for="@Html.FieldIdFor(m => m.WelcomeSubject)">@T("Welcome email subject line")</label>
+@Html.TextBoxFor(m => m.WelcomeSubject, new { @class = "textMedium" })
+<label for="@Html.FieldIdFor(m => m.WelcomeBodyTemplate)">@T("Welcome email body template (Use &lt;br/&gt; to start a new line, {0} First Name, {1} Last Name)")</label>
+@Html.TextAreaFor(m => m.WelcomeBodyTemplate)
+<label for="@Html.FieldIdFor(m => m.UnsubscribeEmail)">@T("Email address for customer to unsubscribe")</label>
+@Html.TextBoxFor(m => m.UnsubscribeEmail, new { @class = "textMedium" })
+</fieldset>
+
+@* This is display:none because it should be implemented as Workflow. TODO: Implement Workflow Element *@
+<fieldset style="display: none; margin-top: 20px;">
+    <legend>@T("MailChimp list management settings")</legend>
+    <div>
+        @Html.CheckBoxFor(m => m.UseMailChimp)
+        <label for="@Html.FieldIdFor(m => m.UseMailChimp)" class="forcheckbox">
+            @T("Use MailChimp to manage subscriber lists")
+    </label>
+</div>
+<label for="@Html.FieldIdFor(m => m.MailChimpApiKey)">@T("MailChimp API Key")</label>
+@Html.TextBoxFor(m => m.MailChimpApiKey, new { @class = "textMedium" })
+<label for="@Html.FieldIdFor(m => m.MailChimpListName)">@T("MailChimp List to which subscribers will be added")</label>
+@Html.TextBoxFor(m => m.MailChimpListName, new { @class = "textMedium" })
+<label for="@Html.FieldIdFor(m => m.MailChimpGroupName)">@T("Group Name")</label>
+@Html.TextBoxFor(m => m.MailChimpGroupName, new { @class = "textMedium" })
+<label for="@Html.FieldIdFor(m => m.MailChimpGroupValue)">@T("Group Value (must be specified if a Group Name is specified)")</label>
+@Html.TextBoxFor(m => m.MailChimpGroupValue, new { @class = "textMedium" })
+</fieldset>
+</div>
 </fieldset>

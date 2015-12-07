@@ -12,6 +12,8 @@ namespace Cascade.WebShop.ViewModels
         [UIHint("Address")]
         public AddressViewModel ShippingAddress { get; set; }
 
+        public bool ShippingAddressSupplied { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var address = InvoiceAddress;

@@ -482,7 +482,6 @@
     <Compile Include="Extensibility\PaymentResult.cs" />
     <Compile Include="Filters\ProductPartFilter.cs" />
     <Compile Include="Handlers\CustomerPartHandler.cs" />
-    <Compile Include="Handlers\EmailHandler.cs" />
     <Compile Include="Handlers\ProductPartHandler.cs" />
     <Compile Include="Handlers\WebShopSettingsPartHandler.cs" />
     <Compile Include="Helpers\OrderDetailSerializer.cs" />
@@ -549,7 +548,7 @@
     <Content Include="Views\Checkout.SelectAddress.cshtml" />
     <Content Include="Views\EditorTemplates\Address.cshtml" />
     <Content Include="Views\AddressAdmin\Edit.cshtml" />
-    <None Include="Views\Checkout.Summary.cshtml" />
+    <Content Include="Views\Checkout.Summary.cshtml" />
     <Content Include="Views\Order.Created.cshtml" />
     <Content Include="Views\SimulatedPaymentServiceProvider\Index.cshtml" />
     <Content Include="Views\Order.PaymentResponse.cshtml" />
@@ -566,6 +565,10 @@
     <ProjectReference Include="..\..\Core\Orchard.Core.csproj">
       <Project>{9916839c-39fc-4ceb-a5af-89ca7e87119f}</Project>
       <Name>Orchard.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orchard.Email\Orchard.Email.csproj">
+      <Project>{05660f47-d649-48bd-9ded-df4e01e7cff9}</Project>
+      <Name>Orchard.Email</Name>
     </ProjectReference>
     <ProjectReference Include="..\Orchard.Projections\Orchard.Projections.csproj">
       <Project>{5531e894-d259-45a3-aa61-26dbe720c1ce}</Project>

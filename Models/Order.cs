@@ -26,9 +26,9 @@ namespace Cascade.WebShop.Models
     }
 
     // PART
-    public class OrderRecordPart: ContentPart<OrderRecord>
+    public class OrderPart: ContentPart<OrderRecord>
     {
-        public OrderRecordPart()
+        public OrderPart()
         {
             Details = new List<OrderDetail>();
         }
@@ -73,7 +73,7 @@ namespace Cascade.WebShop.Models
         public  void UpdateTotals()
         {
             SubTotal = Details.Sum(d => d.SubTotal);
-            GST = Details.Sum(d => d.UnitGST * d.UnitPrice);
+            GST = SubTotal / 11;
             RawDetails = OrderDetailSerializer.Serialize(Details);
         }
     }

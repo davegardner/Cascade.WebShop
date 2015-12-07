@@ -191,26 +191,22 @@ namespace Cascade.WebShop
                 .Column<string>("RawDetails", c => c.Unlimited())
                 );
 
-            ContentDefinitionManager.AlterPartDefinition("OrderRecordPart", part => part
+            ContentDefinitionManager.AlterPartDefinition("OrderPart", part => part
                 .Attachable(false)
             );
 
             ContentDefinitionManager.AlterTypeDefinition("Order", builder => builder
-                .WithPart("OrderRecordPart")
+                .WithPart("OrderPart")
             );
 
             SchemaBuilder.DropTable("OrderDetailRecord");
 
+            SchemaBuilder.AlterTable("AddressRecord", table => table
+                .AddColumn<int>("OrderId")
+            );
             return 3;
         }
 
-        public int UpdateFrom3()
-        {
-            SchemaBuilder.AlterTable("AddressRecord", table => table
-                .AddColumn<int>("OrderId")
-           );
-            return 4;
-        }
     }
 
     //[OrchardFeature("Booking", FeatureName = "Cascade.WebShop.Feature1")]

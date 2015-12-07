@@ -41,14 +41,12 @@ namespace Cascade.WebShop.Controllers
 
         public ActionResult Index(PagerParameters pagerParameters, CustomersSearchVM search)
         {
-
             // Create a basic query that selects all customer content items, joined with the UserPartRecord table
             var customerQuery = _customerService.GetCustomers().Join<UserPartRecord>().List();
 
             // If the user specified a search expression, update the query with a filter
             if (!string.IsNullOrWhiteSpace(search.Expression))
             {
-
                 var expression = search.Expression.Trim();
 
                 customerQuery = from customer in customerQuery

@@ -8,99 +8,108 @@
     var vat = (decimal)Model.GST;
     var total = (decimal)Model.Total;
 }
-<h2>
-    Shopping cart</h2>
-<p>
-    Adjust quantities and/or remove items from the cart as neccessary, then click the
-    <strong>Proceed to checkout</strong> button.</p>
-@if (items.Any(i => i.Type == "ShippingProduct"))
-{
-    <p>
-        <i class="icon-truck" style="font-size: 500%; margin-right: 20px; float: left; line-height: 1">
-        </i>We charge a flat rate for packing and shipping to any Australian destination.
-        Please contact us if you wish us to deliver to a destination outside Australia.
-        Alternatively, you are welcome to collect your order from us in Maldon or make other arrangements
-        for shipping, in which case you should remove the Packing & shipping item
-        below.</p>
-}
-<div id="shoppingcart">
-    <div data-bind="visible: !hasItems()">
-        <p>
-            You don't have any items in your shopping cart.</p>
-        <a class="button catalog" href="@Model.ContinueShoppingUrl">Continue shopping</a>
-    </div>
-    <div data-bind="visible: hasItems()">
-        <article class="shoppingcart" 
-            data-load-shoppingcart-url="@Url.Action("GetItems", "ShoppingCart", new { area = "Cascade.WebShop" })" 
-            data-update-shoppingcart-url="@Url.Action("Update", "ShoppingCart", new { area = "Cascade.WebShop" })">
-            @using (Html.BeginFormAntiForgeryPost(Url.Action("Update", "ShoppingCart", new { area = "Cascade.WebShop" })))
+<div id="shoppingcart" class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>
+                Shopping cart
+            </h2>
+            @if (items.Any(i => i.Type == "ShippingProduct"))
             {
-                <table class="table table-condensed">
-                    <thead>
-                        <tr>
-                            <th>SKU</th>
-                            <th>Article</th>
-                            <th><span class="pull-right">Unit Price</span></th>
-                            <th><span class="pull-right">Quantity</span></th>
-                            <th><span class="pull-right">Total Price</span></th>
-                            <th class="action"></th>
-                        </tr>
-                    </thead>
-                    <tbody  data-bind='template: {name: "itemTemplate", foreach: items}'>
-                      
-                    </tbody>
-                    <tfoot class="well well-small">
-                        <tr>
-                            <td class="update" colspan="6">
-                                <button name="command" value="Update" type="submit">
-                                    Update</button>
-                            </td>
-                        </tr>
-                       
-                        <tr>
-                            <td colspan="4">
-                                GST included (10%):&nbsp;
-                            </td>
-                            <td >
-                                <span class="pull-right" data-bind="text: Globalize.format(calculateGST(), 'c')">@vat.ToString("c")</span>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="4">
-                                Total (inc GST):&nbsp;
-                            </td>
-                            <td >
-                                <span class="pull-right" data-bind="text: Globalize.format(calculateTotal(), 'c')">@total.ToString("c")</span>
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-         
-                <footer>
-                    <div class="well form-actions">
-                        <a class="button catalog" href="@Model.ContinueShoppingUrl">Return to shopping</a>
-                        <button type="submit" class="btn btn-primary pull-right" name="command" value="Checkout" data-bind="enable: hasProducts" >
-                            Proceed to checkout</button>
-                    </div>
-                </footer>
+                <p>
+                    Adjust quantities and/or remove items from the cart as neccessary, then click the
+                    <strong>Proceed to checkout</strong> button.
+                </p>
             }
-        </article>
-        <script type="text/html" id="itemTemplate">
-            <tr >
-                <td><span data-bind="text: sku"></span></td>
-                <td><span data-bind="text: title"></span></td>
-                <td><span class="pull-right" data-bind="text: Globalize.format(unitPrice, 'c')"></span></td>
-                <td>
-                    <input data-bind="attr: { name: 'items[' + index() + '].ProductId'}, value: id" type="hidden" />
-                    <input class="input-mini pull-right" data-bind="attr: { name: 'items[' + index() + '].Quantity', readOnly: type=='ShippingProduct'}, value: quantity" type="number" />
-                </td>
-                <td><span class="pull-right" data-bind="text: Globalize.format(total(), 'c')"></span></td>
-                <td>&nbsp;&nbsp;<a href="javascript:;" title="Remove this item"><i class="icon-remove"></i></a></td>
-            </tr>
-        </script>
+            @if (items.Any(i => i.Type == "ShippingProduct"))
+            {
+                <p>
+                    <i class="icon-truck" style="font-size: 500%; margin-right: 20px; float: left; line-height: 1">
+                    </i>We charge a flat rate for packing and shipping to any Australian destination.
+                    Please contact us if you wish us to deliver to a destination outside Australia.
+                    Alternatively, you are welcome to collect your order from us in Maldon or make other arrangements
+                    for shipping, in which case you should remove the Packing & shipping item
+                    below.
+                </p>
+            }
+            <div data-bind="visible: !hasItems()">
+                <p>
+                    You don't have any items in your shopping cart.
+                </p>
+                <a class="btn btn-info" href="@Model.ContinueShoppingUrl">Continue shopping</a>
+            </div>
+            <div data-bind="visible: hasItems()">
+                <article class="shoppingcart"
+                         data-load-shoppingcart-url="@Url.Action("getitems", "ShoppingCart" , new { area="Cascade.WebShop" })"
+                         data-update-shoppingcart-url="@Url.Action("update", "ShoppingCart" , new { area="Cascade.WebShop" })">
+                    @using (Html.BeginFormAntiForgeryPost(Url.Action("Update", "ShoppingCart", new { area = "Cascade.WebShop" })))
+                    {
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Article</th>
+                                    <th><span class="pull-right">Unit Price</span></th>
+                                    <th><span class="pull-right">Quantity</span></th>
+                                    <th><span class="pull-right">Total Price</span></th>
+                                    <th class="action"></th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind='template: {name: "itemTemplate", foreach: items}'></tbody>
+                            <tfoot class="well well-small">
+                                <tr>
+                                    <td class="update" colspan="6">
+                                        <button name="command" value="Update" type="submit">
+                                            Update
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4">
+                                        GST included (10%):&nbsp;
+                                    </td>
+                                    <td>
+                                        <span class="pull-right" data-bind="text: Globalize.format(calculateGST(), 'c')">@vat.ToString("c")</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        Total (inc GST):&nbsp;
+                                    </td>
+                                    <td>
+                                        <span class="pull-right" data-bind="text: Globalize.format(calculateTotal(), 'c')">@total.ToString("c")</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <footer>
+                            <div class="well form-actions">
+                                <a class="btn btn-info" href="@Model.ContinueShoppingUrl">Return to shopping</a>
+                                <button type="submit" class="btn btn-primary pull-right" name="command" value="Checkout" data-bind="enable: hasProducts">
+                                    Proceed to checkout
+                                </button>
+                            </div>
+                        </footer>
+                    }
+                </article>
+                <script type="text/html" id="itemTemplate">
+                    <tr>
+                        <td><span data-bind="text: sku"></span></td>
+                        <td><span data-bind="text: title"></span></td>
+                        <td><span class="pull-right" data-bind="text: Globalize.format(unitPrice, 'c')"></span></td>
+                        <td>
+                            <input data-bind="attr: { name: 'items[' + index() + '].ProductId'}, value: id" type="hidden" />
+                            <input class="input-mini pull-right" data-bind="attr: { name: 'items[' + index() + '].Quantity', readOnly: type=='ShippingProduct'}, value: quantity" type="number" />
+                        </td>
+                        <td><span class="pull-right" data-bind="text: Globalize.format(total(), 'c')"></span></td>
+                        <td>&nbsp;&nbsp;<a href="javascript:;" title="Remove this item"><i class="icon-remove"></i></a></td>
+                    </tr>
+                </script>
+            </div>
+        </div>
     </div>
 </div>

@@ -5,11 +5,11 @@ namespace Cascade.WebShop.Extensibility
 {
     public class PaymentRequest
     {
-        public OrderRecordPart Order { get; private set; }
+        public OrderPart Order { get; private set; }
         public bool WillHandlePayment { get; set; }
         public ActionResult ActionResult { get; set; }
 
-        public PaymentRequest(OrderRecordPart order)
+        public PaymentRequest(OrderPart order)
         {
             Order = order;
         }
