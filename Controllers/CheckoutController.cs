@@ -32,12 +32,12 @@ namespace Cascade.WebShop.Controllers
 
         private Localizer T { get; set; }
 
-        public CheckoutController(IOrchardServices services, 
-            IAuthenticationService authenticationService, 
-            ICustomerService customerService, 
+        public CheckoutController(IOrchardServices services,
+            IAuthenticationService authenticationService,
+            ICustomerService customerService,
             IMembershipService membershipService,
-            IShoppingCart shoppingCart, 
-            IWebshopSettingsService webshopSettings, 
+            IShoppingCart shoppingCart,
+            IWebshopSettingsService webshopSettings,
             IOrderService orderService,
             ISmtpChannel email)
         {
@@ -132,8 +132,8 @@ namespace Cascade.WebShop.Controllers
                 body += "<br/><br/>PS You are subscribed to our mailing list. To unsubscribe please send an email to " + unsubscribe;
             return body;
         }
-        
-      
+
+
         [Themed]
         public ActionResult Login()
         {
@@ -198,14 +198,14 @@ namespace Cascade.WebShop.Controllers
             };
 
             var shape = _services.New.Checkout_SelectAddress(
-                Addresses: addressesViewModel, 
+                Addresses: addressesViewModel,
                 ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
                 Booking: new BookingVM()
                 );
-            
+
             if (string.IsNullOrWhiteSpace(addressesViewModel.InvoiceAddress.Name))
                 addressesViewModel.InvoiceAddress.Name = string.Format("{0} {1} {2}", customer.Title, customer.FirstName, customer.LastName);
-            
+
             return new ShapeResult(this, shape);
         }
 
@@ -220,9 +220,9 @@ namespace Cascade.WebShop.Controllers
             if (!addresses.InvoiceAddress.IsValidAddress())
                 ModelState.AddModelError("InvalidInvoiceAddress", "Please correct the Invoice Address and try again.");
 
-            if(addresses.ShippingAddressSupplied && !addresses.ShippingAddress.IsValidAddress())
+            if (addresses.ShippingAddressSupplied && !addresses.ShippingAddress.IsValidAddress())
                 ModelState.AddModelError("InvalidShippingAddress", "Please correct the Shipping Address and try again.");
-            
+
             if (!ModelState.IsValid)
             {
                 addresses.InvoiceAddress.CountryCodes = CountryCode.SelectList;
@@ -233,13 +233,13 @@ namespace Cascade.WebShop.Controllers
 
             var customer = currentUser.ContentItem.As<CustomerPart>();
             var order = _orderService.CreateOrder(customer.Id, _shoppingCart.Items, booking);
-            
+
             // save order id for Review action and order controller
             HttpContext.Session["orderid"] = order.Id;
 
             MapAddress(addresses.InvoiceAddress, "InvoiceAddress", customer);
 
-            if(addresses.ShippingAddressSupplied)
+            if (addresses.ShippingAddressSupplied)
                 MapAddress(addresses.ShippingAddress, "ShippingAddress", customer, order);
 
 
@@ -277,7 +277,7 @@ namespace Cascade.WebShop.Controllers
             }
             else
             {
-                addressPart = _customerService.CreateAddress(customerPart.Id, addressType, order==null ? 0 : order.Id);
+                addressPart = _customerService.CreateAddress(customerPart.Id, addressType, order == null ? 0 : order.Id);
             }
 
             addressPart.Name = source.Name.TrimSafe();
@@ -300,11 +300,8 @@ namespace Cascade.WebShop.Controllers
 
             dynamic shippingAddress = null;
             var orderIdObject = HttpContext.Session["orderid"];
-            if(orderIdObject != null)
-            {
-                var orderId = (int)orderIdObject;
-                shippingAddress = _customerService.GetShippingAddress(user.Id, orderId);
-            }
+            var orderId = (int)orderIdObject;
+            shippingAddress = _customerService.GetShippingAddress(user.Id, orderId);
 
             dynamic invoiceAddress = _customerService.GetInvoiceAddress(user.Id);
             dynamic shoppingCartShape = _services.New.ShoppingCart();
@@ -324,7 +321,8 @@ namespace Cascade.WebShop.Controllers
                 ShoppingCart: shoppingCartShape,
                 InvoiceAddress: invoiceAddress,
                 ShippingAddress: shippingAddress,
-                ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()
+                ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
+                Order: _orderService.GetOrder(orderId)
             ));
         }
 

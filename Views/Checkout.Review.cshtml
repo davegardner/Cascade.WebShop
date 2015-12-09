@@ -10,26 +10,52 @@
     var total = (decimal)shoppingCart.Total;
     var ship = shippingAddress == null ? "none" : "block";
     var continueShopping = Model.ContinueShoppingUrl;
+    var order = (OrderPart)Model.Order;
+
+    var days = (order.Monday ? "Monday " : "") +
+      (order.Tuesday ? "Tuesday " : "") +
+      (order.Wednesday ? "Wednesday " : "") +
+      (order.Thursday ? "Thursday " : "") +
+      (order.Friday ? "Friday " : "") +
+      (order.Saturday ? "Saturday " : "") +
+      (order.Sunday ? "Sunday " : "");
+    var times = (order.Morning ? "Morning " : "") +
+        (order.Afternoon ? "Afternoon " : "") +
+        (order.Evening ? "Evening " : "");
+    var notes = new HtmlString(order.Notes.Replace("\n", "\n<br/>\n"));
+
+
 
 }
 <div class="container">
     <div class="row">
         <div class="col-sm-12">
-            <h2>
-                Review your order
-            </h2>
+
             @if (!items.Any())
             {
+                <h2>Your Shopping Cart is Empty!</h2>
                 <p>
-                    You don't have any items in your shopping cart.
+                    You don't have any items in your shopping cart. This might be because your browser session has timed out.
+                    Please try again.
                 </p>
                 <a class="btn btn-info" href="@continueShopping">Continue shopping</a>
             }
             else
             {
+                <h2>
+                    Your service has been booked
+                </h2>
+                <p>We will contact you shortly to confirm your booking.</p>
+                <blockquote>
+                    Preferred days: @days<br />
+                    Preferred times: @times<br />
+                    Specific time: @if (order.SpecificDateTime.HasValue)
+                    {@order.SpecificDateTime.Value.ToString()}
+                </blockquote>
                 <p>
-                    Please review the information below, then click the <strong>Place Order</strong>
-                    button to proceed to payment.
+                    For your convenience, you can pay online now. Simply click the <strong>Pay Now</strong>
+                    button at the bottom of the page. If you would prefer not to pay online click <strong>Pay Later</strong>
+                    for us to contact you about payment.
                 </p>
 
                 <article class="shoppingcart">
@@ -145,7 +171,7 @@
                             <h6>
                                 Invoice
                                 @if (ship == "none")
-                                { <text>and Shipping </text>} Address
+                                { <text>and Booking </text>} Address
                             </h6>
                             <address>
                                 @invoiceAddress.Name<br />
@@ -158,7 +184,7 @@
                         {
                             <div class="span4">
                                 <h6>
-                                    Shipping Address
+                                    Booking Address
                                 </h6>
                                 <address>
                                     @shippingAddress.Name<br />
@@ -176,8 +202,9 @@
                         <div class="well form-actions ">
                             <a class="btn btn-info" href="@Model.ContinueShoppingUrl">Continue shopping</a>
                             <button type="submit" class="btn btn-primary pull-right">
-                                Place Order
+                                Pay Now
                             </button>
+                            <a style="margin-right:10px;" class="btn btn-primary pull-right" href="~/">Pay Later</a>
                         </div>
                     }
                 </article>
