@@ -207,6 +207,32 @@ namespace Cascade.WebShop
             return 3;
         }
 
+        // SAFETEC extensions
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterTable("OrderRecord", table => {
+                table.AddColumn<bool>("Monday");
+                table.AddColumn<bool>("Tuesday");
+                table.AddColumn<bool>("Wednesday");
+                table.AddColumn<bool>("Thursday");
+                table.AddColumn<bool>("Friday");
+                table.AddColumn<bool>("Saturday");
+                table.AddColumn<bool>("Sunday");
+                table.AddColumn<bool>("Morning");
+                table.AddColumn<bool>("Afternoon");
+                table.AddColumn<bool>("Evening");
+                table.AddColumn<DateTime>("SpecificDateTime", c => c.Nullable());
+                table.AddColumn<string>("Notes", c => c.Unlimited());
+            });
+
+            ContentDefinitionManager.AlterTypeDefinition("Order", builder => builder
+                .RemovePart("CommonPart")
+                .WithPart("CommonPart", p => p.WithSetting("OwnerEditorSettings.ShowOwnerEditor", "false"))
+         );
+
+            return 4;
+        }
+
     }
 
     //[OrchardFeature("Booking", FeatureName = "Cascade.WebShop.Feature1")]

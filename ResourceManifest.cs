@@ -31,7 +31,7 @@ namespace Cascade.WebShop
             manifest.DefineScript("Cascade.WebShop.ShoppingCart").SetUrl("shoppingcart.js").SetDependencies("jQuery", "jQuery_LinqJs", "Knockout");
 
             manifest.DefineScript("AddToShoppingCart").SetUrl("addtocartbutton.js").SetDependencies("jQuery");
-            manifest.DefineScript("WebShop.Summary").SetUrl("summary.js").SetDependencies("jQuery", "Knockout");
+            manifest.DefineScript("WebShop.Review").SetUrl("summary.js").SetDependencies("jQuery", "Knockout");
 
             manifest.DefineScript("Knockout").SetUrl("knockout-3.3.0.js", "knockout-3.3.0.debug.js");
         }

@@ -58,15 +58,24 @@ namespace Cascade.WebShop.Controllers
             if (customer == null)
                 throw new InvalidOperationException("The current user is not a customer");
 
-            var order = _orderService.CreateOrder(customer.Id, _shoppingCart.Items);
+            var orderIdObject = HttpContext.Session["orderid"];
+            if(orderIdObject == null)
+                throw new Exception("Unable to retrieve the order id from the session context");
+
+            var orderId = (int)orderIdObject;
+
+            var order = _orderService.GetOrder(orderId);
+            
+            if (order == null)
+                throw new Exception("Unable to retrieve the order");
 
             // wire up the shipping address that we left dangling
-            var shippingAddress = _customerService.GetShippingAddress(user.Id, 0);
-            if (shippingAddress != null)
-            {
-                shippingAddress.OrderId = order.Id;
-                _contentManager.Publish(shippingAddress.ContentItem);
-            }
+            //var shippingAddress = _customerService.GetShippingAddress(user.Id, 0);
+            //if (shippingAddress != null)
+            //{
+            //    shippingAddress.OrderId = order.Id;
+            //    _contentManager.Publish(shippingAddress.ContentItem);
+            //}
 
             // Todo: Give paymet service providers a chance to process payment by sending a event. 
             // If no PSP handled the event, we'll just continue by displaying the created order.
@@ -91,7 +100,7 @@ namespace Cascade.WebShop.Controllers
                 Products: _orderService.GetProducts(order.Details).ToArray(),
                 Customer: customer,
                 InvoiceAddress: (dynamic)_customerService.GetInvoiceAddress(user.Id),
-                ShippingAddress: (dynamic)shippingAddress
+                ShippingAddress: (dynamic)_customerService.GetShippingAddress(user.Id, order.Id)
             );
             return new ShapeResult(this, shape);
         }

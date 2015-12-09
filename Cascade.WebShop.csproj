@@ -513,6 +513,7 @@
     <Compile Include="ViewModels\AdminAddressesViewModel.cs" />
     <Compile Include="ViewModels\CustomersIndexVM.cs" />
     <Compile Include="ViewModels\CustomersSearchVM.cs" />
+    <Compile Include="ViewModels\BookingVM.cs" />
     <Compile Include="ViewModels\EditOrderVM.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\WebShopSettingsVM.cs" />
@@ -548,7 +549,7 @@
     <Content Include="Views\Checkout.SelectAddress.cshtml" />
     <Content Include="Views\EditorTemplates\Address.cshtml" />
     <Content Include="Views\AddressAdmin\Edit.cshtml" />
-    <Content Include="Views\Checkout.Summary.cshtml" />
+    <Content Include="Views\Checkout.Review.cshtml" />
     <Content Include="Views\Order.Created.cshtml" />
     <Content Include="Views\SimulatedPaymentServiceProvider\Index.cshtml" />
     <Content Include="Views\Order.PaymentResponse.cshtml" />

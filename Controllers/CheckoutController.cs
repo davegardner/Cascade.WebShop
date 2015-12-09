@@ -13,6 +13,7 @@ using Orchard.Mvc;
 using Orchard.Security;
 using Orchard.Themes;
 using Orchard.Email.Services;
+using System;
 
 namespace Cascade.WebShop.Controllers
 {
@@ -25,13 +26,20 @@ namespace Cascade.WebShop.Controllers
         private readonly IShoppingCart _shoppingCart;
         private readonly IWebshopSettingsService _webshopSettings;
         //private readonly IMessageManager _messageManager;
+        private readonly IOrderService _orderService;
         private readonly ISmtpChannel _email;
 
 
         private Localizer T { get; set; }
 
-        public CheckoutController(IOrchardServices services, IAuthenticationService authenticationService, ICustomerService customerService, IMembershipService membershipService,
-            IShoppingCart shoppingCart, IWebshopSettingsService webshopSettings, ISmtpChannel email)
+        public CheckoutController(IOrchardServices services, 
+            IAuthenticationService authenticationService, 
+            ICustomerService customerService, 
+            IMembershipService membershipService,
+            IShoppingCart shoppingCart, 
+            IWebshopSettingsService webshopSettings, 
+            IOrderService orderService,
+            ISmtpChannel email)
         {
             _authenticationService = authenticationService;
             _services = services;
@@ -40,9 +48,8 @@ namespace Cascade.WebShop.Controllers
             _shoppingCart = shoppingCart;
             _webshopSettings = webshopSettings;
             _email = email;
-            //_messageManager = messageManager;
-
             T = NullLocalizer.Instance;
+            _orderService = orderService;
         }
 
         [Themed]
@@ -114,11 +121,15 @@ namespace Cascade.WebShop.Controllers
 
         private object MergeBody(CustomerPart customer)
         {
+            string body = String.Empty;
             string unsubscribe = _webshopSettings.Settings.UnsubscribeEmail;
-            string body = string.Format(_webshopSettings.Settings.WelcomeBodyTemplate,
-                customer.FirstName, customer.LastName);
-            //if (subscribed && !string.IsNullOrWhiteSpace(unsubscribe))
-            //    body += "<br/><br/>PS You are subscribed to our mailing list. To unsubscribe please send an email to " + unsubscribe;
+            if (!String.IsNullOrWhiteSpace(_webshopSettings.Settings.WelcomeBodyTemplate))
+            {
+                body = string.Format(_webshopSettings.Settings.WelcomeBodyTemplate,
+                    customer.FirstName, customer.LastName);
+            }
+            if (customer.SubscribeToMailingList && !string.IsNullOrWhiteSpace(unsubscribe))
+                body += "<br/><br/>PS You are subscribed to our mailing list. To unsubscribe please send an email to " + unsubscribe;
             return body;
         }
         
@@ -186,14 +197,20 @@ namespace Cascade.WebShop.Controllers
                 ShippingAddress = MapAddress(shippingAddress, customer)
             };
 
-            var shape = _services.New.Checkout_SelectAddress(Addresses: addressesViewModel, ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl());
+            var shape = _services.New.Checkout_SelectAddress(
+                Addresses: addressesViewModel, 
+                ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
+                Booking: new BookingVM()
+                );
+            
             if (string.IsNullOrWhiteSpace(addressesViewModel.InvoiceAddress.Name))
                 addressesViewModel.InvoiceAddress.Name = string.Format("{0} {1} {2}", customer.Title, customer.FirstName, customer.LastName);
+            
             return new ShapeResult(this, shape);
         }
 
         [Themed, HttpPost]
-        public ActionResult SelectAddress(AddressesViewModel addresses)
+        public ActionResult SelectAddress(AddressesViewModel addresses, BookingVM booking)
         {
             var currentUser = _authenticationService.GetAuthenticatedUser();
 
@@ -215,13 +232,18 @@ namespace Cascade.WebShop.Controllers
             }
 
             var customer = currentUser.ContentItem.As<CustomerPart>();
+            var order = _orderService.CreateOrder(customer.Id, _shoppingCart.Items, booking);
+            
+            // save order id for Review action and order controller
+            HttpContext.Session["orderid"] = order.Id;
 
             MapAddress(addresses.InvoiceAddress, "InvoiceAddress", customer);
 
             if(addresses.ShippingAddressSupplied)
-                MapAddress(addresses.ShippingAddress, "ShippingAddress", customer);
+                MapAddress(addresses.ShippingAddress, "ShippingAddress", customer, order);
 
-            return RedirectToAction("Summary");
+
+            return RedirectToAction("Review");
         }
 
         private AddressViewModel MapAddress(AddressPart addressPart, CustomerPart customer)
@@ -243,7 +265,7 @@ namespace Cascade.WebShop.Controllers
             return addressViewModel;
         }
 
-        private AddressPart MapAddress(AddressViewModel source, string addressType, CustomerPart customerPart)
+        private AddressPart MapAddress(AddressViewModel source, string addressType, CustomerPart customerPart, OrderPart order = null)
         {
             // Allow for many different Shipping Addresses: one for each order
             AddressPart addressPart;
@@ -255,7 +277,7 @@ namespace Cascade.WebShop.Controllers
             }
             else
             {
-                addressPart = _customerService.CreateAddress(customerPart.Id, addressType, 0);
+                addressPart = _customerService.CreateAddress(customerPart.Id, addressType, order==null ? 0 : order.Id);
             }
 
             addressPart.Name = source.Name.TrimSafe();
@@ -269,15 +291,22 @@ namespace Cascade.WebShop.Controllers
         }
 
         [Themed]
-        public ActionResult Summary()
+        public ActionResult Review()
         {
             var user = _authenticationService.GetAuthenticatedUser();
 
             if (user == null)
                 throw new OrchardSecurityException(T("Login required"));
 
+            dynamic shippingAddress = null;
+            var orderIdObject = HttpContext.Session["orderid"];
+            if(orderIdObject != null)
+            {
+                var orderId = (int)orderIdObject;
+                shippingAddress = _customerService.GetShippingAddress(user.Id, orderId);
+            }
+
             dynamic invoiceAddress = _customerService.GetInvoiceAddress(user.Id);
-            dynamic shippingAddress = _customerService.GetShippingAddress(user.Id, 0);
             dynamic shoppingCartShape = _services.New.ShoppingCart();
 
             var query = _shoppingCart.GetProducts().Select(x => _services.New.ShoppingCartItem(
@@ -291,7 +320,7 @@ namespace Cascade.WebShop.Controllers
             shoppingCartShape.Subtotal = _shoppingCart.Subtotal();
             shoppingCartShape.GST = _shoppingCart.GST();
 
-            return new ShapeResult(this, _services.New.Checkout_Summary(
+            return new ShapeResult(this, _services.New.Checkout_Review(
                 ShoppingCart: shoppingCartShape,
                 InvoiceAddress: invoiceAddress,
                 ShippingAddress: shippingAddress,

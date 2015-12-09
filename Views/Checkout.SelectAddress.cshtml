@@ -1,23 +1,50 @@
 ﻿@using System.Web.Mvc.Html
 @using System.Web.Mvc
 @using Cascade.WebShop.ViewModels
-@*@using Orchard.Fields.Fields*@
 @using Orchard.ContentManagement;
+
 @{
     var addresses = (AddressesViewModel)Model.Addresses;
     var contentItem = (ContentItem)Model.ContentItem;
+    var booking = (BookingVM)Model.Booking;
+
+
     Style.Require("Cascade.WebShop.Common");
     Script.Require("jQuery");
 }
+@*@using (Script.Foot())
+{
+    <script type="text/javascript">
+        // NOTES:
+        //  1. jQuery must be enabled for this to work
+        //  2. Yout must add id='putThisInAContainer' to some element in this template
+        $("#putThisInAContainer").closest(".zone").addClass("container");
+    </script>
+}*@
+
+@using (Script.Foot())
+    {
+        <script type="text/javascript">
+            $("#@Html.FieldIdFor(m => addresses.ShippingAddressSupplied)").click(function () {
+                $("#shippingAddressWrapper").toggleClass("hidden");
+            });
+        </script>
+    }
+<style>
+    .dateTimeInline input {
+        display: inline;
+        width: 15em;
+    }
+</style>
 <div class="container">
-    <div class="row">
-        <div class="col-sm-12">
-            <h2>
-                Address Details
-            </h2>
-            <p>@T("Please provide us with your invoice address and shipping address. If both addresses are the same, then you only need to provide us with your invoice address.")</p>
-        </div>
+    <div id='putThisInAContainer' class="row">
+    <div class="col-sm-12">
+        <h2>
+            Booking and Address Details
+        </h2>
+        <p>@T("Please provide us with your invoice addresses, and booking details.")</p>
     </div>
+</div>
 
     <div class="row">
         <div class="col-sm-12">
@@ -25,13 +52,49 @@
             {
                 @Html.EditorFor(m => addresses.InvoiceAddress)
 
+
+                <h2>Booking Details </h2>
+
                 <div style="margin:20px 0;">
                     @Html.EditorFor(m => addresses.ShippingAddressSupplied)
-                    <label for="@Html.FieldIdFor(m => addresses.ShippingAddressSupplied)" class="forcheckbox"> @T("Ship to a different address?")</label>
+
+                    <label for="@Html.FieldIdFor(m => addresses.ShippingAddressSupplied)" class="forcheckbox"> @T("Different Booking Address?")</label>
                 </div>
                 <div id="shippingAddressWrapper" class="hidden">
                     @Html.EditorFor(m => addresses.ShippingAddress)
-
+                </div>
+                <h4>Date/Time</h4>
+                <div class="form-group">
+                    <div class="col-sm-3 control-label">@T("Preferred Day(s)")</div>
+                    <div class="col-sm-9">
+                        @Html.CheckBoxFor(m => booking.Monday) <label for="@Html.FieldIdFor(m=> booking.Monday)" class="forcheckbox">Monday</label>
+                        @Html.CheckBoxFor(m => booking.Tuesday) <label for="@Html.FieldIdFor(m=> booking.Tuesday)" class="forcheckbox">Tuesday</label>
+                        @Html.CheckBoxFor(m => booking.Wednesday) <label for="@Html.FieldIdFor(m=> booking.Wednesday)" class="forcheckbox">Wednesday</label>
+                        @Html.CheckBoxFor(m => booking.Thursday) <label for="@Html.FieldIdFor(m=> booking.Thursday)" class="forcheckbox">Thursday</label>
+                        @Html.CheckBoxFor(m => booking.Friday) <label for="@Html.FieldIdFor(m=> booking.Friday)" class="forcheckbox">Friday</label>
+                        @Html.CheckBoxFor(m => booking.Saturday) <label for="@Html.FieldIdFor(m=> booking.Saturday)" class="forcheckbox">Saturday</label>
+                        @Html.CheckBoxFor(m => booking.Sunday) <label for="@Html.FieldIdFor(m=> booking.Sunday)" class="forcheckbox">Sunday</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3 control-label">@T("Preferred Time(s)")</div>
+                    <div class="col-sm-9">
+                        @Html.CheckBoxFor(m => booking.Morning) <label for="@Html.FieldIdFor(m=> booking.Morning)" class="forcheckbox"> Morning</label>
+                        @Html.CheckBoxFor(m => booking.Afternoon) <label for="@Html.FieldIdFor(m=> booking.Afternoon)" class="forcheckbox">Afternoon</label>
+                        @Html.CheckBoxFor(m => booking.Evening) <label for="@Html.FieldIdFor(m=> booking.Evening)" class="forcheckbox">Evening</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3 control-label">@T("Specific Date/time")</div>
+                    <div class="col-sm-9 dateTimeInline">
+                        @Html.EditorFor(m => booking.SpecificDateTime)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3 control-label">@T("Notes")</div>
+                    <div class="col-sm-9">
+                        @Html.TextAreaFor(m => booking.Notes, 10, 80, new { @class = "BookingNotes" })
+                    </div>
                 </div>
                 <div class="well form-actions">
                     <a class="btn btn-info" href="@Model.ContinueShoppingUrl">Return to shopping</a>
@@ -41,12 +104,3 @@
         </div>
     </div>
 </div>
-
-@using (Script.Foot())
-{
-    <script type="text/javascript">
-        $("#@Html.FieldIdFor(m => addresses.ShippingAddressSupplied)").click(function () {
-            $("#shippingAddressWrapper").toggleClass("hidden");
-        });
-    </script>
-}

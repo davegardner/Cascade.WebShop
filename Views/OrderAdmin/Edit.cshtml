@@ -16,6 +16,18 @@
     var shippingAddress2 = (string)Model.ShippingAddress2;
     var shippingCountry = (string)Model.ShippingCountry;
     Layout.Title = "Edit Order";
+    var days = (order.Monday ? "Monday " : "") +
+        (order.Tuesday ? "Tuesday " : "") +
+        (order.Wednesday? "Wednesday " : "") +
+        (order.Thursday ? "Thursday " : "") +
+        (order.Friday ? "Friday " : "") +
+        (order.Saturday ? "Saturday " : "") +
+        (order.Sunday ? "Sunday " : "");
+    var times = (order.Morning ? "Morning ": "") +
+        (order.Afternoon ? "Afternoon " : "") +
+        (order.Evening ? "Evening " : "") ;
+    var notes = new HtmlString(order.Notes.Replace("\n", "\n<br/>\n"));
+
 }
 <h1>Order Number @order.Number</h1>
 
@@ -35,19 +47,20 @@
         </div>
     </fieldset>
     <button type="submit">
-        Save</button>
+        Save
+    </button>
 }
 <br />
 <br />
 <fieldset>
-    <legend>Customer and Shipping Details</legend>
+    <legend>Customer and Booking Details</legend>
     <table style="width: 99%;">
         <tr>
             <td style="width: 30%">
                 <strong>Customer invoice address:</strong>
             </td>
             <td>
-                <strong>Shipping address:</strong>
+                <strong>Booking address:</strong>
             </td>
         </tr>
         <tr>
@@ -69,6 +82,28 @@
             </td>
         </tr>
     </table>
+
+    @* SAFETEC *@
+    <table style="width: 99%;">
+        <tr>
+            <td style="width: 30%">
+                <strong>Booking details:</strong>
+            </td>
+            <td>
+                <strong>Notes:</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Preferred days: @days</p>
+                <p>Preferred times: @times</p>
+                <p>Specific time: @if(order.SpecificDateTime.HasValue){@order.SpecificDateTime.Value.ToString()}</p>
+            </td>
+            <td>
+                <p>@Html.Raw(notes)</p>
+            </td>
+        </tr>
+    </table>
 </fieldset>
 <br />
 <br />
@@ -84,44 +119,52 @@
         </colgroup>
         <thead>
             <tr>
-                <th scope="col">@T("Sku")
+                <th scope="col">
+                    @T("Sku")
                 </th>
-                <th scope="col">@T("Description")
+                <th scope="col">
+                    @T("Description")
                 </th>
-                <th scope="col">@T("Price")
+                <th scope="col">
+                    @T("Price")
                 </th>
-                <th scope="col">@T("Quantity")
+                <th scope="col">
+                    @T("Quantity")
                 </th>
-                <th scope="col" style="text-align: right">@T("Total")
+                <th scope="col" style="text-align: right">
+                    @T("Total")
                 </th>
             </tr>
         </thead>
         @foreach (var detail in details)
-        {
-            quantity += detail.Quantity;
-            decimal subtotal = detail.Quantity * detail.UnitPrice;
+{
+    quantity += detail.Quantity;
+    decimal subtotal = detail.Quantity * detail.UnitPrice;
             <tr>
-                <td>@detail.Sku
+                <td>
+                    @detail.Sku
                 </td>
-                <td>@detail.Description
+                <td>
+                    @detail.Description
                 </td>
-                <td>@detail.UnitPrice.ToString("c")
+                <td>
+                    @detail.UnitPrice.ToString("c")
                 </td>
-                <td>@detail.Quantity
+                <td>
+                    @detail.Quantity
                 </td>
-                <td style="text-align: right">@subtotal.ToString("c")
+                <td style="text-align: right">
+                    @subtotal.ToString("c")
                 </td>
             </tr>
-        }
+}
         <tfoot>
             <tr>
                 <td>
                     <strong>Totals</strong>
                 </td>
-                <td>
-                </td>
-                <td>
-                </td>
+                <td></td>
+                <td></td>
                 <td>
                     <strong>@quantity</strong>
                 </td>
