@@ -14,6 +14,7 @@ using Orchard.Security;
 using Orchard.Themes;
 using Orchard.Email.Services;
 using System;
+using Cascade.WebShop.Settings;
 
 namespace Cascade.WebShop.Controllers
 {
@@ -25,7 +26,6 @@ namespace Cascade.WebShop.Controllers
         private readonly IMembershipService _membershipService;
         private readonly IShoppingCart _shoppingCart;
         private readonly IWebshopSettingsService _webshopSettings;
-        //private readonly IMessageManager _messageManager;
         private readonly IOrderService _orderService;
         private readonly ISmtpChannel _email;
 
@@ -105,17 +105,6 @@ namespace Cascade.WebShop.Controllers
                 { "BodyTemplate", MergeBody(customer) },
             });
 
-            //_messageManager.Send(new[] { signup.Email }, "WELCOME", "email", new Dictionary<string, string> 
-            //        { 
-            //            { "Subject", _webshopSettings.Settings.WelcomeSubject},
-            //            { "BodyTemplate", _webshopSettings.Settings.WelcomeBodyTemplate },
-            //            { "LastName", customer.LastName }, 
-            //            { "FirstName", customer.FirstName }, 
-            //            { "Subscribed", signup.ReceiveNewsletter.ToString() },
-            //            { "UnsubscribeEmail", _webshopSettings.Settings.UnsubscribeEmail}
-            //        });
-
-
             return RedirectToAction("SelectAddress");
         }
 
@@ -188,20 +177,36 @@ namespace Cascade.WebShop.Controllers
                 return RedirectToAction("SignupOrLogin");
             }
 
+            //var orderIdObject = HttpContext.Session["orderid"];
+            //var orderId = (int)orderIdObject;
+
             var invoiceAddress = _customerService.GetInvoiceAddress(customer.Id);
             var shippingAddress = _customerService.GetLastShippingAddress(customer.Id);
 
             var addressesViewModel = new AddressesViewModel
             {
                 InvoiceAddress = MapAddress(invoiceAddress, customer),
-                ShippingAddress = MapAddress(shippingAddress, customer)
+                ShippingAddress = MapAddress(shippingAddress, customer),
+                ShippingAddressSupplied = false
             };
 
-            var shape = _services.New.Checkout_SelectAddress(
-                Addresses: addressesViewModel,
-                ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
-                Booking: new BookingVM()
-                );
+            dynamic shape;
+            // if any product is a Booking then use the Booking Template
+            if (_shoppingCart.GetProductParts().Any(p => p.Settings.GetModel<ProductSettings>().Mode == ProductMode.Booking))
+            {
+                shape = _services.New.Checkout_Booking_SelectAddress(
+                    Addresses: addressesViewModel,
+                    ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
+                    Booking: new BookingVM()
+                    );
+            }
+            else
+            {
+                shape = _services.New.Checkout_Product_SelectAddress(
+                    Addresses: addressesViewModel,
+                    ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()
+                    );
+            }
 
             if (string.IsNullOrWhiteSpace(addressesViewModel.InvoiceAddress.Name))
                 addressesViewModel.InvoiceAddress.Name = string.Format("{0} {1} {2}", customer.Title, customer.FirstName, customer.LastName);
@@ -217,18 +222,40 @@ namespace Cascade.WebShop.Controllers
             if (currentUser == null)
                 throw new OrchardSecurityException(T("Login required"));
 
+            var isBooking = _shoppingCart.GetProductParts()
+                .Any(p => p.Settings.GetModel<ProductSettings>().Mode == ProductMode.Booking);
+
             if (!addresses.InvoiceAddress.IsValidAddress())
                 ModelState.AddModelError("InvalidInvoiceAddress", "Please correct the Invoice Address and try again.");
 
             if (addresses.ShippingAddressSupplied && !addresses.ShippingAddress.IsValidAddress())
-                ModelState.AddModelError("InvalidShippingAddress", "Please correct the Shipping Address and try again.");
+            {
+                if (isBooking)
+                    ModelState.AddModelError("InvalidBookingAddress", "Please correct the Booking Address and try again.");
+                else
+                    ModelState.AddModelError("InvalidShippingAddress", "Please correct the Shipping Address and try again.");
+            }
 
             if (!ModelState.IsValid)
             {
                 addresses.InvoiceAddress.CountryCodes = CountryCode.SelectList;
                 addresses.ShippingAddress.CountryCodes = CountryCode.SelectList;
 
-                return new ShapeResult(this, _services.New.Checkout_SelectAddress(Addresses: addresses, ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()));
+                if (isBooking)
+                {
+                    return new ShapeResult(this, _services.New.Checkout_Booking_SelectAddress(
+                        Addresses: addresses,
+                        ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
+                        Booking : booking
+                        ));
+                }
+                else
+                {
+                    return new ShapeResult(this, _services.New.Checkout_Product_SelectAddress(
+                        Addresses: addresses,
+                        ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl()
+                        ));
+                }
             }
 
             var customer = currentUser.ContentItem.As<CustomerPart>();
@@ -252,6 +279,7 @@ namespace Cascade.WebShop.Controllers
 
             if (addressPart != null)
             {
+                addressViewModel.AddressType = addressPart.Type;
                 addressViewModel.Name = addressPart.Name;
                 addressViewModel.Address = addressPart.Address;
                 addressViewModel.State = addressPart.State;
@@ -317,13 +345,28 @@ namespace Cascade.WebShop.Controllers
             shoppingCartShape.Subtotal = _shoppingCart.Subtotal();
             shoppingCartShape.GST = _shoppingCart.GST();
 
-            return new ShapeResult(this, _services.New.Checkout_Review(
-                ShoppingCart: shoppingCartShape,
-                InvoiceAddress: invoiceAddress,
-                ShippingAddress: shippingAddress,
-                ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
-                Order: _orderService.GetOrder(orderId)
-            ));
+            var order = _orderService.GetOrder(orderId);
+            dynamic shape;
+
+            // Select the template depending on whether any product is a Booking
+            if (_orderService.ProductWithMode(order, ProductMode.Booking))
+
+                shape = new ShapeResult(this, _services.New.Checkout_Booking_Review(
+                    ShoppingCart: shoppingCartShape,
+                    InvoiceAddress: invoiceAddress,
+                    ShippingAddress: shippingAddress,
+                    ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
+                    Order: order
+                ));
+            else
+                shape = new ShapeResult(this, _services.New.Checkout_Product_Review(
+                    ShoppingCart: shoppingCartShape,
+                    InvoiceAddress: invoiceAddress,
+                    ShippingAddress: shippingAddress,
+                    ContinueShoppingUrl: _webshopSettings.GetContinueShoppingUrl(),
+                    Order: order
+                ));
+            return shape;
         }
 
     }

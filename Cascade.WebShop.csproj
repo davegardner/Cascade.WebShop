@@ -474,6 +474,7 @@
     <Compile Include="Drivers\WebShopSettingsPartDriver.cs" />
     <Compile Include="Handlers\AddressPartHandler.cs" />
     <Compile Include="Handlers\OrderPartHandler.cs" />
+    <Compile Include="Settings\ProductSettingsHandler.cs" />
     <Compile Include="Handlers\ShippingProductHandler.cs" />
     <Compile Include="Extensibility\IPaymentServiceProvider.cs" />
     <Compile Include="Extensibility\PaymentRequest.cs" />
@@ -492,6 +493,7 @@
     <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderStatus.cs" />
+    <Compile Include="Settings\ProductSettings.cs" />
     <Compile Include="Models\ShippingProduct.cs" />
     <Compile Include="Models\TransactionRecord.cs" />
     <Compile Include="Models\Product.cs" />
@@ -523,6 +525,9 @@
     <Content Include="Views\EditorTemplates\Parts\WebShop.Settings.cshtml" />
     <Content Include="Views\EditorTemplates\Parts\ShippingProduct.cshtml" />
     <Content Include="README.md" />
+    <Content Include="Views\DefinitionTemplates\ProductSettings.cshtml" />
+    <Content Include="Views\Checkout.Product.Review.cshtml" />
+    <Content Include="Views\Checkout.Product.SelectAddress.cshtml" />
     <None Include="Views\OrderAdmin\Edit.cshtml" />
     <Content Include="Views\OrderAdmin\Index.cshtml" />
     <Content Include="Views\OrderAdmin\History.cshtml" />
@@ -546,10 +551,10 @@
     <Content Include="Views\Checkout.SignupOrLogin.cshtml" />
     <Content Include="Views\Checkout.Signup.cshtml" />
     <Content Include="Views\Checkout.Login.cshtml" />
-    <Content Include="Views\Checkout.SelectAddress.cshtml" />
+    <Content Include="Views\Checkout.Booking.SelectAddress.cshtml" />
     <Content Include="Views\EditorTemplates\Address.cshtml" />
     <Content Include="Views\AddressAdmin\Edit.cshtml" />
-    <Content Include="Views\Checkout.Review.cshtml" />
+    <Content Include="Views\Checkout.Booking.Review.cshtml" />
     <Content Include="Views\Order.Created.cshtml" />
     <Content Include="Views\SimulatedPaymentServiceProvider\Index.cshtml" />
     <Content Include="Views\Order.PaymentResponse.cshtml" />

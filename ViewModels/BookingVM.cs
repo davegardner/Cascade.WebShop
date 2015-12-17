@@ -6,8 +6,6 @@ namespace Cascade.WebShop.ViewModels
 {
     public class BookingVM
     {
-
-        public int Id { get; set; }
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }
         public bool Wednesday { get; set; }
@@ -35,7 +33,6 @@ namespace Cascade.WebShop.ViewModels
 
             if (order != null)
             {
-                Id = order.Id;
                 Monday = order.Monday;
                 Tuesday = order.Tuesday;
                 Wednesday = order.Wednesday;

@@ -1,5 +1,15 @@
-﻿
+﻿#shoppingCartSummary{
+    padding: 10px;
+    border: solid 1px #000;
+    margin-top: 1px;
+    border-radius: 4px;
+}
  
+@media(min-width: 768px){
+    #shoppingCartSummary .shoppingCartButton a{
+        float: right;
+}
+
 article.widget-shopping-cart-widget article span.label{
     width: 60px;
     font-style: italic;

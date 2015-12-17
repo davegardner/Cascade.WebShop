@@ -1,0 +1,9 @@
+﻿@model Cascade.WebShop.Settings.ProductSettings
+<fieldset>
+    <div>
+        @Html.LabelFor(m => m.Mode, T("Product Mode"))
+        @Html.DropDownListFor(m => m.Mode,
+            new System.Web.Mvc.SelectList(
+                Model.AvailableModes, "Value", "Text", (int)Model.Mode))
+    </div>
+</fieldset>

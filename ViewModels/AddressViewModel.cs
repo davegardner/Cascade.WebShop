@@ -11,6 +11,8 @@ namespace Cascade.WebShop.ViewModels
             CountryCode = "AU";
         }
 
+        public string AddressType { get; set; }
+
         [StringLength(50)]
         public string Name { get; set; }
 

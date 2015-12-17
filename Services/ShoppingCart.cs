@@ -13,6 +13,7 @@ namespace Cascade.WebShop.Services
         void Add(int productId, int quantity = 1);
         void Remove(int productId);
         ProductPart GetProduct(int productId);
+        IEnumerable<ProductPart> GetProductParts();
         IEnumerable<ProductQuantity> GetProducts();
         decimal Subtotal();
         decimal GST();
@@ -146,15 +147,11 @@ namespace Cascade.WebShop.Services
 
         public IEnumerable<ProductQuantity> GetProducts()
         {
-            // Get a list of all product IDs from the shopping cart
-            var ids = Items.Select(x => x.ProductId).ToList();
-
-            // Load all product parts by the list of IDs
-            var productParts = _contentManager.GetMany<ProductPart>(ids, VersionOptions.Latest, QueryHints.Empty).ToArray();
+            var productParts = GetProductParts();
 
             // Create a LINQ query that projects all items in the shoppingcart into shapes
             // Order by sku is to enable shipping to appear last (if it has lower sku!)
-            var query = from item in Items
+            var productQuantities = from item in Items
                         from productPart in productParts
                         where productPart.Id == item.ProductId
                         orderby productPart.Sku descending
@@ -164,7 +161,7 @@ namespace Cascade.WebShop.Services
                             Quantity = item.Quantity
                         };
 
-            return query;
+            return productQuantities;
         }
 
         public void AddRange(IEnumerable<ShoppingCartItem> iEnumerable)
@@ -181,6 +178,17 @@ namespace Cascade.WebShop.Services
                     product.InStock -= item.Quantity;
                 product.NumberSold += item.Quantity;
             }
+        }
+
+        public IEnumerable<ProductPart> GetProductParts()
+        {
+            // Get a list of all product IDs from the shopping cart
+            var ids = Items.Select(x => x.ProductId).ToList();
+
+            // Load all product parts by the list of IDs
+            var productParts = _contentManager.GetMany<ProductPart>(ids, VersionOptions.Latest, QueryHints.Empty).ToArray();
+
+            return productParts;
         }
     }
 }

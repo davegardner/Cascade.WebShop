@@ -1,9 +1,10 @@
-# Cascade.CBCA.Member
-Creates a MemberPart and adds it to the UserPart. This extends the User with information about CBCA Membership.
+# Cascade.WebShop
+A simple eCommerce module loosely based on Sipke Schoorstra's web module tutorials.
 
-All fields are stored as columns as well as infosets, ensuring that data can be searched, sorted, 
-etc with standard SQL queries. This is a requirement for reporting.
+The ProductPart must be attached to a Type that you create. You then have an options to specify
+that the Type is a Booking or a Product. Both are online saleable. A booking requests a
+Date (or preferred Date) as well.
 
-The Memberpart is kept separate from the UserPart for security reasons. This makes it easy to make Member 
-info available for reporting without compromising the identity data help in the User table. Certain fields
-(name, email address) are duplicated for the same reason.
+On Checkout, any cart that contains a booking item will prompt for a date/time.
+
+Install with a Payment Provider such as Cascade.Paypal.

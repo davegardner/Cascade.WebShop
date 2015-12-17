@@ -23,9 +23,6 @@
         (order.Afternoon ? "Afternoon " : "") +
         (order.Evening ? "Evening " : "");
     var notes = new HtmlString(order.Notes.Replace("\n", "\n<br/>\n"));
-
-
-
 }
 <div class="container">
     <div class="row">
@@ -43,19 +40,12 @@
             else
             {
                 <h2>
-                    Your service has been booked
+                    Your products have been ordered
                 </h2>
-                <p>We will contact you shortly to confirm your booking.</p>
-                <blockquote>
-                    Preferred days: @days<br />
-                    Preferred times: @times<br />
-                    Specific time: @if (order.SpecificDateTime.HasValue)
-                    {@order.SpecificDateTime.Value.ToString()}
-                </blockquote>
                 <p>
                     For your convenience, you can pay online now. Simply click the <strong>Pay Now</strong>
                     button at the bottom of the page. If you would prefer not to pay online click <strong>Pay Later</strong>
-                    for us to contact you about payment.
+                    for us to contact you about payment. Please note that no products will be shipped until payment has been received.
                 </p>
 
                 <article class="shoppingcart">
@@ -171,7 +161,7 @@
                             <h6>
                                 Invoice
                                 @if (ship == "none")
-                                { <text>and Booking </text>} Address
+                                { <text>and Shipping</text>} Address
                             </h6>
                             <address>
                                 @invoiceAddress.Name<br />
@@ -184,7 +174,7 @@
                         {
                             <div class="span4">
                                 <h6>
-                                    Booking Address
+                                    Shipping Address
                                 </h6>
                                 <address>
                                     @shippingAddress.Name<br />

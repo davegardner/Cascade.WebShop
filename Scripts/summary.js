@@ -14,6 +14,7 @@
         $.getJSON(dataUrl, function (data) {
             summaryVM.itemCount(data.itemCount);
             summaryVM.totalAmount(data.total);
+            $('#shoppingCartSummary').removeClass('hidden');
         });
     }
 

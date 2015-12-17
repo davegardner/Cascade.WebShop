@@ -10,6 +10,7 @@ using Orchard.Services;
 using Orchard;
 using Cascade.WebShop.Helpers;
 using Cascade.WebShop.ViewModels;
+using Cascade.WebShop.Settings;
 
 namespace Cascade.WebShop.Services
 {
@@ -40,8 +41,11 @@ namespace Cascade.WebShop.Services
 
         void UpdateOrderStatus(OrderPart order, PaymentResponse paymentResponse);
 
+        // Returns tru if any of the Products on the Order
+        // contain the specified Mode
+        bool ProductWithMode(OrderPart order, ProductMode mode);
     }
-    
+
     public class OrderService : IOrderService
     {
         private readonly IRepository<ProductRecord> _productRepository;
@@ -52,7 +56,7 @@ namespace Cascade.WebShop.Services
         private readonly WebShopSettingsPart _webShopSettings;
         private readonly IClock _clock;
 
-        public OrderService(IRepository<ProductRecord> productRepository, IContentManager contentManager, IRepository<OrderRecord> orderRepository,  IRepository<CustomerRecord> customerRepository, ISiteService siteService, IClock clock)
+        public OrderService(IRepository<ProductRecord> productRepository, IContentManager contentManager, IRepository<OrderRecord> orderRepository, IRepository<CustomerRecord> customerRepository, ISiteService siteService, IClock clock)
         {
             _productRepository = productRepository;
             _contentManager = contentManager;
@@ -74,8 +78,6 @@ namespace Cascade.WebShop.Services
 
         public OrderPart CreateOrder(int customerId, IEnumerable<ShoppingCartItem> items, BookingVM booking)
         {
-            if (booking == null)
-                throw new ArgumentNullException("booking");
             if (items == null)
                 throw new ArgumentNullException("items");
 
@@ -88,7 +90,7 @@ namespace Cascade.WebShop.Services
             var orderPart = CreateOrder();
             orderPart.CustomerId = customerId;
             orderPart.Status = OrderStatus.New;
-        
+
             // Create an order detail for each item
             foreach (var item in itemsArray)
             {
@@ -120,28 +122,30 @@ namespace Cascade.WebShop.Services
                 orderPart.Details.Add(detail);
             }
 
-            // map the booking
-            orderPart.Monday = booking.Monday;
-            orderPart.Tuesday = booking.Tuesday;
-            orderPart.Wednesday = booking.Wednesday;
-            orderPart.Thursday = booking.Thursday;
-            orderPart.Friday = booking.Friday;
-            orderPart.Saturday = booking.Saturday;
-            orderPart.Sunday = booking.Sunday;
-            orderPart.Morning = booking.Morning;
-            orderPart.Afternoon = booking.Afternoon;
-            orderPart.Evening = booking.Evening;
-            if(booking.SpecificDateTime != null && !String.IsNullOrWhiteSpace(booking.SpecificDateTime.Date))
+            if (booking != null)
             {
-                var dt = booking.SpecificDateTime.Date;
-                if(String.IsNullOrWhiteSpace(booking.SpecificDateTime.Time))
+                // map the booking
+                orderPart.Monday = booking.Monday;
+                orderPart.Tuesday = booking.Tuesday;
+                orderPart.Wednesday = booking.Wednesday;
+                orderPart.Thursday = booking.Thursday;
+                orderPart.Friday = booking.Friday;
+                orderPart.Saturday = booking.Saturday;
+                orderPart.Sunday = booking.Sunday;
+                orderPart.Morning = booking.Morning;
+                orderPart.Afternoon = booking.Afternoon;
+                orderPart.Evening = booking.Evening;
+                if (booking.SpecificDateTime != null && !String.IsNullOrWhiteSpace(booking.SpecificDateTime.Date))
                 {
-                    dt += " " + booking.SpecificDateTime.Time;
+                    var dt = booking.SpecificDateTime.Date;
+                    if (String.IsNullOrWhiteSpace(booking.SpecificDateTime.Time))
+                    {
+                        dt += " " + booking.SpecificDateTime.Time;
+                    }
+                    orderPart.SpecificDateTime = Convert.ToDateTime(dt);
                 }
-                orderPart.SpecificDateTime = Convert.ToDateTime(dt);
+                orderPart.Notes = booking.Notes;
             }
-            orderPart.Notes = booking.Notes;
-
             orderPart.UpdateTotals();
 
             return orderPart;
@@ -213,5 +217,10 @@ namespace Cascade.WebShop.Services
             }
         }
 
+        public bool ProductWithMode(OrderPart order, ProductMode mode)
+        {
+            return GetProducts(order.Details)
+                .Any(p => p.Settings.GetModel<ProductSettings>().Mode == mode);
+        }
     }
 }

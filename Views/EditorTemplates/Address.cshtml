@@ -1,22 +1,9 @@
 ﻿@model Cascade.WebShop.ViewModels.AddressViewModel
-@{
-    string title = ViewData.ModelMetadata.GetDisplayName();
-    if (title == "InvoiceAddress"){
-        title = "Invoice Address";
-    }
-    else if (title == "ShippingAddress") { 
-        title = "Booking Address";
-    }
-}
 
-<h4>@title</h4>
+<h4>Address</h4>
 <div class="form-group">
-    <label class="col-sm-3 control-label" for="@Html.FieldIdFor(m=>m.Name)">
-        @T("Name")
-    </label>
-    <div class="col-sm-9">
-        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-    </div>
+    <label class="col-sm-3 control-label" for="@Html.FieldIdFor(m=>m.Name)">@T("Name")</label>
+    <div class="col-sm-9">@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })</div>
 </div>
 <div class="form-group">
     <div class="col-sm-3 control-label">@Html.LabelFor(m => m.Address, T("Address"))</div>
