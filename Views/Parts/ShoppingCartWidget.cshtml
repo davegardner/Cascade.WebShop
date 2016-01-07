@@ -5,16 +5,23 @@
 
     var itemCount = (int)Model.ItemCount;
     var totalAmount = (decimal)Model.TotalAmount;
-    var url = (string) Model.ContinueShoppingUrl;
+    var url = (string)Model.ContinueShoppingUrl;
 }
 <article class="summary hidden" id="shoppingCartSummary"
          data-load-shoppingcart-url="@Url.Action("GetSummary", "ShoppingCart", new { area = "Cascade.WebShop" })">
-    <div>
-        <p data-bind="visible: itemCount() == 0" class="empty">Empty. Please visit our <a href="@Url.Content(url)">shop</a></p>
-        <p data-bind="visible: itemCount() > 0">
-            <span class="value" data-bind="text: itemCount"></span> items total <span data-bind="text: Globalize.format(totalAmount(), 'c')"></span>
-            <span class="shoppingCartButton"><a class="btn btn-sm btn-primary" href="@Url.Action("Index", "ShoppingCart", new {area = "Cascade.WebShop"})"><i class="fa fa-shopping-cart"></i> Checkout</a></span>
-        </p>
-        
+    <div data-bind="visible: itemCount() == 0" class="empty">
+        Empty. Please visit our <a href="@Url.Content(url)">shop</a>
+    </div>
+    <div class="container" data-bind="visible: itemCount() > 0">
+        <div class="row">
+            <div class="col-sm-6">
+                <span class="value" data-bind="text: itemCount"></span> items total <span data-bind="text: Globalize.format(totalAmount(), 'c')"></span>
+            </div>
+            <div class="col-sm-6">
+                <a class="btn btn-sm btn-primary pull-right" href="@Url.Action("Index", "ShoppingCart", new {area = "Cascade.WebShop"})">
+                    <i class="fa fa-shopping-cart"></i> Checkout
+                </a>
+            </div>
+        </div>
     </div>
 </article>

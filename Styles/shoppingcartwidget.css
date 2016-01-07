@@ -1,16 +1,17 @@
 ﻿#shoppingCartSummary{
     padding: 10px;
-    border: solid 1px #000;
+    border: solid 1px #777;
     margin-top: 1px;
-    border-radius: 4px;
-}
- 
-@media(min-width: 768px){
-    #shoppingCartSummary .shoppingCartButton a{
-        float: right;
+    border-radius: 3px;
 }
 
-article.widget-shopping-cart-widget article span.label{
+
+/*@media(min-width: 768px){
+    #shoppingCartSummary .shoppingCartButton a{
+        float: right;
+}*/
+
+/*article.widget-shopping-cart-widget article span.label{
     width: 60px;
     font-style: italic;
     color: #aaa;
@@ -18,5 +19,5 @@ article.widget-shopping-cart-widget article span.label{
 }
 
 button.addtocart {
-    margin-left: 10px;
-}
+    margin-left: 10px;*/
+/*}*/

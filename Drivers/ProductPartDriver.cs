@@ -2,6 +2,8 @@
 using Orchard.ContentManagement.Drivers;
 using Cascade.WebShop.Models;
 using Cascade.WebShop.Services;
+using Orchard.ContentManagement.Handlers;
+using System;
 
 namespace Cascade.WebShop.Drivers
 {
@@ -57,5 +59,35 @@ namespace Cascade.WebShop.Drivers
             return Editor(part, shapeHelper);
         }
 
+        protected override void Importing(ProductPart part, ImportContentContext context)
+        {
+            // Don't do anything if the tag is not specified.
+            if (context.Data.Element(part.PartDefinition.Name) == null)
+            {
+                return;
+            }
+
+            context.ImportAttribute(part.PartDefinition.Name, "InStock", inStock => part.InStock = Convert.ToInt32(inStock));
+            context.ImportAttribute(part.PartDefinition.Name, "IsShippable", isShippable => part.IsShippable = Convert.ToBoolean(isShippable));
+            context.ImportAttribute(part.PartDefinition.Name, "NumberSold", numberSold => part.NumberSold = Convert.ToInt32(numberSold));
+            context.ImportAttribute(part.PartDefinition.Name, "ReorderLevel", reorderLevel => part.ReorderLevel = Convert.ToInt32(reorderLevel));
+            context.ImportAttribute(part.PartDefinition.Name, "Sku", sku => part.Sku = sku);
+            context.ImportAttribute(part.PartDefinition.Name, "UnitPrice", unitPrice => part.UnitPrice = Convert.ToDecimal(unitPrice));
+            context.ImportAttribute(part.PartDefinition.Name, "UseStockControl", useStockControl => part.UseStockControl = Convert.ToBoolean(useStockControl));
+            context.ImportAttribute(part.PartDefinition.Name, "CanReorder", canReorder => part.CanReorder = Convert.ToBoolean(canReorder));
+        }
+
+        protected override void Exporting(ProductPart part, ExportContentContext context)
+        {
+            context.Element(part.PartDefinition.Name).SetAttributeValue("InStock", part.Record.InStock);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("IsShippable", part.Record.IsShippable);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("NumberSold", part.Record.NumberSold);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("ReorderLevel", part.Record.ReorderLevel);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("Sku", part.Record.Sku);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("UnitPrice", part.Record.UnitPrice);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("UseStockControl", part.Record.UseStockControl);
+            context.Element(part.PartDefinition.Name).SetAttributeValue("CanReorder", part.Record.CanReorder);
+
+        }
      }
 }
