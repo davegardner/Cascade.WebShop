@@ -12,7 +12,7 @@ namespace Cascade.WebShop.Models
         public virtual string FirstName { get; set; }
         public virtual string LastName { get; set; }
         public virtual string Title { get; set; }
-        public virtual DateTime CreatedUtc { get; set; }
+        public virtual DateTime? CreatedUtc { get; set; }
         public virtual bool SubscribeToMailingList { get; set; }
         public virtual bool AgreeTermsAndConditions { get; set; }
         public virtual bool WelcomeEmailPending { get; set; }
@@ -42,7 +42,8 @@ namespace Cascade.WebShop.Models
             set { Store(r=>r.Title, value); }
         }
 
-        public DateTime CreatedUtc
+        // Dates must be declared nullable in the Model otherwise content items will fail to be created during import
+        public DateTime? CreatedUtc
         {
             get { return Retrieve(r=>r.CreatedUtc); }
             set { Store(r=>r.CreatedUtc, value); }
