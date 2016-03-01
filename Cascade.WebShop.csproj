@@ -528,7 +528,7 @@
     <Content Include="Views\DefinitionTemplates\ProductSettings.cshtml" />
     <Content Include="Views\Checkout.Product.Review.cshtml" />
     <Content Include="Views\Checkout.Product.SelectAddress.cshtml" />
-    <None Include="Views\OrderAdmin\Edit.cshtml" />
+    <Content Include="Views\OrderAdmin\Edit.cshtml" />
     <Content Include="Views\OrderAdmin\Index.cshtml" />
     <Content Include="Views\OrderAdmin\History.cshtml" />
     <Content Include="Views\Parts\ShippingProduct.cshtml" />

@@ -25,7 +25,7 @@ namespace Cascade.WebShop
             // Define Globalization resources
             manifest.DefineScript("Globalize").SetUrl("globalize.js").SetDependencies("jQuery");
             manifest.DefineScript("Globalize.Cultures").SetBasePath(manifest.BasePath + "scripts/cultures/").SetUrl("globalize.culture.js").SetCultures("en-US", "en-AU", "en-UK", "nl-NL").SetDependencies("Globalize", "jQuery");
-            manifest.DefineScript("Globalize.SetCulture").SetUrl("~/Cascade.WebShop/Resource/SetCultureScript").SetDependencies("Globalize.Cultures");
+            //manifest.DefineScript("Globalize.SetCulture").SetUrl("~/Cascade.WebShop/Resource/SetCultureScript").SetDependencies("Globalize.Cultures");
 
             // Define the "shoppingcart" script and set a dependency on the "jQuery" resource
             manifest.DefineScript("Cascade.WebShop.ShoppingCart").SetUrl("shoppingcart.js").SetDependencies("jQuery", "jQuery_LinqJs", "Knockout");

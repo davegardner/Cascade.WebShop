@@ -5,7 +5,7 @@ var addToCart = function (productId) {
     var url = $(".addtocartbuttons").data("addtocart-url");
     var headers = {};
     headers[tokenName] = token;
-    var data = { productId: productId, __RequestVerificationToken: token};
+    var data = { productId: productId};
     var config = {
         url: url,
         type: "POST",
