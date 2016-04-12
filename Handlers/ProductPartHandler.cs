@@ -1,4 +1,4 @@
-﻿using Orchard.ContentManagement.Handlers;
+﻿using Orchard.ContentManagement.Utilities;
 using Orchard.Data;
 using Cascade.WebShop.Models;
 using System.Linq;

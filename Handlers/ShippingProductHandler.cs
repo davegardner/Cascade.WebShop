@@ -1,5 +1,5 @@
 ﻿using Cascade.WebShop.Models;
-using Orchard.ContentManagement.Handlers;
+using Orchard.ContentManagement.Utilities;
 using Orchard.Data;
 
 namespace Cascade.WebShop.Handlers
